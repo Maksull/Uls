@@ -1,19 +1,19 @@
 #ifndef ULS_H
 #define ULS_H
 
-#include "../libmx/inc/libmx.h"
-#include "const.h"
-#include <dirent.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/xattr.h>
 #include <sys/ioctl.h>
 #include <sys/acl.h>
+#include <dirent.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
 #include <string.h>
 #include <errno.h>
+#include "../libmx/inc/libmx.h"
+#include "const.h"
 
 typedef struct dirent t_dirent;
 typedef struct stat t_stat;
@@ -64,7 +64,7 @@ typedef struct s_flags {
 
 #define IS_R(m) (m & S_IRUSR && m & S_IRGRP && m & S_IROTH)
 #define IS_X(m) (m & S_IXUSR && m & S_IXGRP && m & S_IXOTH)
-#define IS_DIR(m) (((m) & S_IFMT) == S_IFDIR)
+#define IS_DIR(m) (((m) & 00170000) == 0040000)
 #define IS_LNK(m) (((m) & S_IFMT) == S_IFLNK)
 #define IS_REG(m) (((m) & S_IFMT) == S_IFREG)
 
@@ -138,5 +138,6 @@ float mx_round(float num, int precision);
 char *mx_dtoa(float d, int precision);
 int mx_toupper(int c);
 void mx_printerr(const char *s);
+char *mx_strrchr(const char *s, int c);
 
 #endif

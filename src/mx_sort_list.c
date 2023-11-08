@@ -1,4 +1,4 @@
-#include "../inc/uls.h";
+#include "../inc/uls.h"
 
 void mx_sort_list(t_file** list, bool (*cmp)(t_file *a, t_file *b)) 
 {
