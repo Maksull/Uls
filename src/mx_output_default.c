@@ -4,16 +4,16 @@ static t_file* get_file_at_index(t_file* file, int index) {
 
     int i = 0;
     while (file) {
-
         if (i == index)
+        {
             return file;
+        }
         
         file = file->next;
         ++i;
-
     }
-    return NULL;
 
+    return NULL;
 }
 
 static int get_max_name_length(t_file** files)
@@ -100,16 +100,18 @@ static void print_rows(t_file** files, int col_width, int rows, int num_names, t
 
             t_file* curr_file = get_file_at_index(*files, i + j);
             if (flags->G && isatty(1))
+            {
                 mx_print_color_file_name(curr_file->name, curr_file->stat.st_mode);
-            else
+            }
+            else {
                 mx_printstr(curr_file->name);
+            }
 
             flags->F ? mx_output_for_F(curr_file->stat.st_mode) : (void) 0;
 
-            if (curr_file->next && (i + j + rows < num_names)) {
-
+            if (curr_file->next && (i + j + rows < num_names)) 
+            {
                 print_tabs(col_width, mx_strlen(curr_file->name));
-
             }
 
         }
@@ -123,10 +125,12 @@ static void print_single_row(t_file** files, int col_width, t_flags* flags)
     while (file)
     {
         if (flags->G && isatty(1))
+        {
             mx_print_color_file_name(file->name, file->stat.st_mode);
-        else
+        }
+        else {
             mx_printstr(file->name);
-
+        }
         flags->F ? mx_output_for_F(file->stat.st_mode) : (void) 0;
         
 
@@ -146,7 +150,6 @@ static void print_file_names(t_file** files, int col_width, int win_cols, t_flag
     int num_names = mx_list_size(*files);
 
     if (num_names * col_width > win_cols) {
-
         rows = calc_rows(cols, num_names);
         print_rows(files, col_width, rows, num_names, flags);
 

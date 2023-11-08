@@ -38,7 +38,9 @@ int mx_handle_dir(const char* dir_name, t_flags* flags, bool is_single)
     while ((dp = readdir(dir)) != NULL) {
 
         if (!mx_is_flags_applied(flags, dp->d_name) || is_uls_file(dp->d_name, dir_name))
+        {
             continue;  
+        }
 
         mx_push_back(&inner_files, dir_name, dp->d_name, flags);
 

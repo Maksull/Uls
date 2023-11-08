@@ -20,11 +20,9 @@ void mx_output_acl_info(const char* acl_str)
     char** acl_lines = mx_strsplit(acl_str, '\n');
 
     for (int i = 1; acl_lines[i] != NULL; ++i) {
-
         char** acl_params = mx_strsplit(acl_lines[i], ':');
         output_acl_params(acl_params, i - 1);
         mx_del_strarr(&acl_params);
-
     }
     mx_del_strarr(&acl_lines);
 }

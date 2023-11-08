@@ -18,12 +18,11 @@ char *mx_dtoa(float d, int precision)
         if (i == len - precision)
         {
             d_str[i] = '.';
+            
             break;
-
-        } else {
-
-        d_str[i] = d_str[i - 1];
-
+        } else 
+        {
+            d_str[i] = d_str[i - 1];
         }
     }
     

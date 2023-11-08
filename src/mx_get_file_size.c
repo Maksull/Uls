@@ -13,12 +13,10 @@ char* mx_get_file_size(long int f_size)
     float tmp;
 
     if (file_size >= Pbyte) {
-
         tmp = (float)file_size / Pbyte;
         file_size_str = format_size_str(tmp, 1, "P");
 
     } else if (file_size >= Tbyte) {
-
         tmp = (float)file_size / Tbyte;
         file_size_str = format_size_str(tmp, 1, "T");
 
@@ -28,18 +26,16 @@ char* mx_get_file_size(long int f_size)
 
     } else if (file_size >= Mbyte) {
         tmp = (float)file_size / Mbyte;
-
         file_size_str = format_size_str(tmp, 1, "M");
 
     } else if (file_size >= 1000) {
         tmp = (float)file_size / Kbyte;
         file_size_str = format_size_str(tmp, 1, "K");
 
-    } else {
-
+    } else 
+    {
         file_size_str = mx_itoa(file_size);
         mx_strcat(file_size_str, "B");
-
     }
     
     return mx_strdup(file_size_str);

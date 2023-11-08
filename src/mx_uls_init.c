@@ -20,8 +20,8 @@ static int handle_reg_files(char** files, t_flags* flags, int* file_count)
         }
         mx_print_dir_error(strerror(errno), files[i]);
         has_errors = true;
-        
     }
+    
     if (reg_files != NULL) {
         mx_handle_file_array(&reg_files, NULL, false, true, flags);
         dir_exists ? mx_printstr("\n") : (void) 0;
