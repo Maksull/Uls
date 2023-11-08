@@ -37,7 +37,7 @@ static t_flags* get_flags(int argc, const char** argv, int* flag_count)
     flag_init(flags);
     for (int i = 1; i < argc; ++i) {
         if ((argv[i][0] == '-') && (mx_strlen(argv[i]) > 1)) {
-            if (mx_isalpha(argv[i][1]) || argv[i][1] == '1' || argv[i][1] == '@') {
+            if (isalpha(argv[i][1]) || argv[i][1] == '1' || argv[i][1] == '@') {
                 ++(*flag_count);
                 for (int j = 1; argv[i][j] != '\0'; j++) {
                     if (is_flag_found(argv[i][j])) {

@@ -83,25 +83,6 @@ char* get_file_permissions(t_file* file, t_flags* flags)
     return file_perms;
 }
 
-static char* format_size_str(float d, int precision, char* letter) 
-{
-    char *file_size_str;
-    float tmp = d;
-
-    if ((int)tmp / 10 > 0) {
-        tmp = mx_round(tmp, 0);
-        file_size_str = mx_itoa(tmp);
-
-    } else {
-        tmp = mx_round(tmp, precision);
-        file_size_str = mx_dtoa(tmp, precision);
-    }
-
-    mx_strcat(file_size_str, letter);
-
-    return file_size_str;
-}
-
 void get_file_lm_date(t_file **file, t_flags* flags) 
 {
     time_t cur_time;
