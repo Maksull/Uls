@@ -18,7 +18,7 @@ static void print_str_double_space(char* str)
     mx_printstr("  ");
 }
 
-static void output_file_l(t_file* file, t_flags* flags) 
+static void output_file_l(t_file* file, t_uls_flags* flags) 
 {
     mx_printchar(file->type);
     print_str_single_space(file->perms);
@@ -51,7 +51,7 @@ static void print_total_blocks(t_file** files)
     mx_printstr("\n");
 }
 
-void mx_output_files_l(t_file** files, bool is_dir, t_flags* flags) 
+void mx_output_files_l(t_file** files, bool is_dir, t_uls_flags* flags) 
 {
     is_dir && *files ? print_total_blocks(files) : (void) 0;
 

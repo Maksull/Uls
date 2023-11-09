@@ -1,6 +1,6 @@
 #include "../inc/uls.h"
 
-void mx_add_flag(t_flags** flags, char flag) 
+void mx_add_flag(t_uls_flags** flags, char flag) 
 {
     switch (flag) {
         case 'l':

@@ -1,13 +1,13 @@
 #include "../inc/uls.h"
 
-static void output_name_for_m(t_file* file, t_flags* flags, bool is_last_file)
+static void output_name_for_m(t_file* file, t_uls_flags* flags, bool is_last_file)
 {
     flags->G && isatty(1) ? mx_print_color_file_name(file->name, file->stat.st_mode) : mx_printstr(file->name);
     flags->F ? mx_output_for_F(file->stat.st_mode) : (void) 0;
     !is_last_file ? mx_printstr(", ") : mx_printstr("\n");
 }
 
-void mx_output_for_m(t_file** files, t_flags* flags)
+void mx_output_for_m(t_file** files, t_uls_flags* flags)
 {
     int out_width;
 

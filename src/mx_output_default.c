@@ -92,7 +92,7 @@ static int calc_rows(int cols, int num_names)
     return rows;
 }
 
-static void print_rows(t_file** files, int col_width, int rows, int num_names, t_flags* flags)
+static void print_rows(t_file** files, int col_width, int rows, int num_names, t_uls_flags* flags)
 {
     for (int i = 0; i < rows; i++) {
 
@@ -119,7 +119,7 @@ static void print_rows(t_file** files, int col_width, int rows, int num_names, t
     }
 }
 
-static void print_single_row(t_file** files, int col_width, t_flags* flags)
+static void print_single_row(t_file** files, int col_width, t_uls_flags* flags)
 {
     t_file* file = *files;
     while (file)
@@ -143,7 +143,7 @@ static void print_single_row(t_file** files, int col_width, t_flags* flags)
     mx_printchar('\n');
 }
 
-static void print_file_names(t_file** files, int col_width, int win_cols, t_flags* flags)
+static void print_file_names(t_file** files, int col_width, int win_cols, t_uls_flags* flags)
 {
     int cols = calc_cols(win_cols, col_width);
     int rows;
@@ -158,7 +158,7 @@ static void print_file_names(t_file** files, int col_width, int win_cols, t_flag
     }
 }
 
-void mx_output_default(t_file** files, t_flags* flags)
+void mx_output_default(t_file** files, t_uls_flags* flags)
 {
     struct winsize win_size;
 

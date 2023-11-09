@@ -19,7 +19,7 @@ static bool is_uls_file(const char* file, const char* dir)
 
 }
 
-int mx_handle_dir(const char* dir_name, t_flags* flags, bool is_single) 
+int mx_handle_dir(const char* dir_name, t_uls_flags* flags, bool is_single) 
 {
     static int error_code = 0;
     DIR* dir;
@@ -37,7 +37,7 @@ int mx_handle_dir(const char* dir_name, t_flags* flags, bool is_single)
 
     while ((dp = readdir(dir)) != NULL) {
 
-        if (!mx_is_flags_applied(flags, dp->d_name) || is_uls_file(dp->d_name, dir_name))
+        if (!mx_is_uls_flags_applied(flags, dp->d_name) || is_uls_file(dp->d_name, dir_name))
         {
             continue;  
         }

@@ -32,7 +32,7 @@ static char get_owner_perms(char old_perm, char new_perm) {
 
 }
 
-static char get_additional_perms(t_file* file, t_flags* flags) 
+static char get_additional_perms(t_file* file, t_uls_flags* flags) 
 {
     ssize_t buf_len = listxattr(file->path, NULL, 0, XATTR_NOFOLLOW);
     acl_t acl_info = acl_get_file(file->path, ACL_TYPE_EXTENDED);
@@ -50,7 +50,7 @@ static char get_additional_perms(t_file* file, t_flags* flags)
     return ' ';
 }
 
-char* get_file_permissions(t_file* file, t_flags* flags) 
+char* get_file_permissions(t_file* file, t_uls_flags* flags) 
 {
     mode_t mode = file->stat.st_mode;
     const int PERMS_LEN = 10;
@@ -83,7 +83,7 @@ char* get_file_permissions(t_file* file, t_flags* flags)
     return file_perms;
 }
 
-void get_file_lm_date(t_file **file, t_flags* flags) 
+void get_file_lm_date(t_file **file, t_uls_flags* flags) 
 {
     time_t cur_time;
     time(&cur_time);
@@ -134,7 +134,7 @@ char* get_linked_file(t_file* file)
     return result;
 }
 
-t_file* create_file_obj(const char* dir_name, const char* name, t_flags* flags) 
+t_file* create_file_obj(const char* dir_name, const char* name, t_uls_flags* flags) 
 {
     t_file* file = malloc(sizeof(t_file));
     file->path = mx_get_file_path(dir_name, name);
@@ -179,7 +179,7 @@ t_file* create_default_file_obj(const char* dir_name, const char* name)
     return file;
 }
 
-void mx_push_back(t_file **list, const char* dir_name, const char* file_name, t_flags* flags)
+void mx_push_back(t_file **list, const char* dir_name, const char* file_name, t_uls_flags* flags)
 {
     t_file* new_node;
     if (!flags->l) {

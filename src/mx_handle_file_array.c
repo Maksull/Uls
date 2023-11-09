@@ -1,6 +1,6 @@
 #include "../inc/uls.h"
 
-void mx_handle_file_array(t_file** files, const char* dir_name, bool is_dir, bool is_single, t_flags* flags) 
+void mx_handle_file_array(t_file** files, const char* dir_name, bool is_dir, bool is_single, t_uls_flags* flags) 
 {
     mx_sort_init(files, flags);
     

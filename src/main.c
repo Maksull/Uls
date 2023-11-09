@@ -1,6 +1,6 @@
 #include "../inc/uls.h"
 
-static void flag_init(t_flags* flags) 
+static void flag_init(t_uls_flags* flags) 
 {
     for (int i = 0; i < FLAG_COUNT; ++i) {
 
@@ -22,7 +22,7 @@ static bool isalpha(int c)
 static bool is_flag_found(char flag) 
 {
     for (size_t i = 0; i < FLAG_COUNT; ++i) {
-        if (flag == const_flags[i])
+        if (flag == const_uls_flags[i])
         {
             return true;
         }
@@ -31,9 +31,9 @@ static bool is_flag_found(char flag)
     return false;
 }
 
-static t_flags* get_flags(int argc, const char** argv, int* flag_count) 
+static t_uls_flags* get_uls_flags(int argc, const char** argv, int* flag_count) 
 {
-    t_flags* flags = malloc(sizeof(t_flags));
+    t_uls_flags* flags = malloc(sizeof(t_uls_flags));
     flag_init(flags);
     for (int i = 1; i < argc; ++i) {
         if ((argv[i][0] == '-') && (mx_strlen(argv[i]) > 1)) {
@@ -92,7 +92,7 @@ int main(int argc, char const *argv[])
 {
     char** files = NULL;
     int flag_count = 1;
-    t_flags* flags = get_flags(argc, argv, &flag_count);
+    t_uls_flags* flags = get_uls_flags(argc, argv, &flag_count);
     int file_count = argc - flag_count;
         
     if (file_count == 0) {

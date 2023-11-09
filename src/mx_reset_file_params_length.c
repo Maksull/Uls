@@ -58,7 +58,7 @@ static void reset_file_num_links_length(t_file** files)
     }
 }
 
-static void reset_file_size_length(t_file** files, t_flags* flags)
+static void reset_file_size_length(t_file** files, t_uls_flags* flags)
 {
     int max_length = flags->h ? 4 : 0;
     int len;
@@ -193,7 +193,7 @@ static void reset_file_lm_time_length(t_file** files)
     }
 }
 
-void mx_reset_file_params_length(t_file** files, t_flags* flags) 
+void mx_reset_file_params_length(t_file** files, t_uls_flags* flags) 
 {
     reset_file_num_links_length(files);
     reset_file_user_name_length(files);

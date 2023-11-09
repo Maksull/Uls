@@ -41,7 +41,7 @@ bool compare_by_ctime(t_file* first, t_file* second)
     return (first->stat.st_ctime < second->stat.st_ctime);    
 }
 
-void mx_sort_init(t_file** files, t_flags* flags) 
+void mx_sort_init(t_file** files, t_uls_flags* flags) 
 {
     if (flags->f) return;
 

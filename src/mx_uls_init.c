@@ -1,6 +1,6 @@
 #include "../inc/uls.h"
 
-static int handle_reg_files(char** files, t_flags* flags, int* file_count) 
+static int handle_reg_files(char** files, t_uls_flags* flags, int* file_count) 
 {
     t_file* reg_files = NULL;
     bool dir_exists = false;
@@ -31,7 +31,7 @@ static int handle_reg_files(char** files, t_flags* flags, int* file_count)
     return has_errors ? 1 : 0;
 }
 
-static int handle_directories(char** files, int file_count, int dir_count, t_flags* flags) 
+static int handle_directories(char** files, int file_count, int dir_count, t_uls_flags* flags) 
 {
     t_file* directories = NULL;
     int dir_idx = 0;
@@ -95,7 +95,7 @@ static int bubble_sort(char **arr, int size, bool (*cmp)(const char* a, const ch
     return swap;
 }
 
-int mx_uls_init(char** files, int file_count, t_flags* flags) 
+int mx_uls_init(char** files, int file_count, t_uls_flags* flags) 
 {
     bubble_sort(files, file_count, cmp_strings);
     

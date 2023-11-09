@@ -7,7 +7,7 @@ static const int SIX_MON_LEN = 15552000;
 #define XATTR_LEN 10000
 
 static const int FLAG_COUNT = 19;
-static const char const_flags[] = { 'a', 'A', 'G', 'l', 'r', 't', 'c', 'u', 'S', 'R', 
+static const char const_uls_flags[] = { 'a', 'A', 'G', 'l', 'r', 't', 'c', 'u', 'S', 'R', 
                                     'T', 'h', '@', 'e', 'C', '1', 'F', 'f', 'm' };
 
 static const char* USAGE_STR    = "usage: uls [-ACFGRSTacefhlmrtu1] [file ...]\n";
