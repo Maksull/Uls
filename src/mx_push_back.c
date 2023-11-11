@@ -3,33 +3,19 @@
 char get_file_type(mode_t mode) 
 {
     switch (mode & S_IFMT) {
-        case S_IFBLK:
-            return 'b';
-        case S_IFCHR:
-            return 'c';
-        case S_IFDIR:
-            return 'd';
-        case S_IFIFO:
-            return 'p';
-        case S_IFLNK:
-            return 'l';
-        case S_IFREG:
-            return '-';
-        case S_IFSOCK:
-            return 's';
-        default:
-            return '?';
+        case S_IFBLK: return 'b';
+        case S_IFCHR: return 'c';
+        case S_IFDIR: return 'd';
+        case S_IFIFO: return 'p';
+        case S_IFLNK: return 'l';
+        case S_IFREG: return '-';
+        case S_IFSOCK: return 's';
+        default: return '?';
     }
 }
 
 static char get_owner_perms(char old_perm, char new_perm) {
-
-    if (old_perm == '-') {
-        return mx_toupper(new_perm);
-    } else {
-        return new_perm;
-    }
-
+    return (old_perm == '-') ? mx_toupper(new_perm) : new_perm;
 }
 
 static char get_additional_perms(t_file* file, t_uls_flags* flags) 
@@ -181,14 +167,7 @@ t_file* create_default_file_obj(const char* dir_name, const char* name)
 
 void mx_push_back(t_file **list, const char* dir_name, const char* file_name, t_uls_flags* flags)
 {
-    t_file* new_node;
-    if (!flags->l) {
-        new_node = create_default_file_obj(dir_name, file_name);
-    }
-    else {
-        new_node = create_file_obj(dir_name, file_name, flags);
-    }
-        
+    t_file* new_node = (!flags->l) ? create_default_file_obj(dir_name, file_name) : create_file_obj(dir_name, file_name, flags);
     t_file *last_node = *list;
 
     if (*list == NULL)
