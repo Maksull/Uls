@@ -22,8 +22,8 @@ static bool is_uls_file(const char* file, const char* dir)
 int mx_handle_dir(const char* dir_name, t_uls_flags* flags, bool is_single) 
 {
     static int error_code = 0;
-    DIR* dir;
-    if ((dir = opendir(dir_name)) == NULL) {
+    DIR* dir = opendir(dir_name);
+    if (!dir) {
         if (errno == EACCES) {
             mx_print_perm_dir_error(strerror(errno), dir_name, is_single);
             return (error_code = 1);
