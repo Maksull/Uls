@@ -64,45 +64,48 @@ static bool cmp_strings_r(const char* a, const char* b)
     return mx_strcmp(a, b) < 0;
 }
 
-static int bubble_sort(char **arr, int size, bool (*cmp)(const char* a, const char* b))
+static int partition(char **arr, int low, int high, bool (*cmp)(const char* a, const char* b))
 {
-    int noSwap;
-    char *tmp;
-    int swap = 0;
+    char *pivot = arr[high];
+    int i = low - 1;
 
-    for (int i = 0; i < size - 1; i++)
+    for (int j = low; j < high; j++)
     {
-        noSwap = 1;
-
-        for (int j = 0; j < size - 1 - i; j++)
+        if (cmp(arr[j], pivot))
         {
-            if (cmp(arr[j], arr[j + 1]))
-            {
-                tmp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = tmp;
-                noSwap = 0;
-                swap++;
-            }
-        }
-
-        if (noSwap == 1)
-        {
-            break;
+            i++;
+            char *temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
     }
-    
-    return swap;
+
+    char *temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+
+    return i + 1;
+}
+
+static void quicksort(char **arr, int low, int high, bool (*cmp)(const char* a, const char* b))
+{
+    if (low < high)
+    {
+        int pi = partition(arr, low, high, cmp);
+
+        quicksort(arr, low, pi - 1, cmp);
+        quicksort(arr, pi + 1, high, cmp);
+    }
 }
 
 int mx_uls_init(char** files, int file_count, t_uls_flags* flags) 
 {
-    bubble_sort(files, file_count, cmp_strings);
+    quicksort(files, 0, file_count - 1, cmp_strings);
     
     int reg_file_count = 0;
     int error_code = handle_reg_files(files, flags, &reg_file_count);
 
-    flags->r ? (void) bubble_sort(files, file_count, cmp_strings_r) : (void) 0;
+    flags->r ? quicksort(files, 0, file_count - 1, cmp_strings_r) : (void)0;
 
     return !handle_directories(files, reg_file_count, file_count - reg_file_count, flags) ? error_code : 1;
 }
