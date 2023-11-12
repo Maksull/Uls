@@ -1,7 +1,9 @@
 #include "../inc/uls.h"
 
+// Function to add a flag to the flags structure
 void mx_add_flag(t_uls_flags** flags, char flag) 
 {
+    // Switch statement to handle each possible flag
     switch (flag) {
         case 'l':
             (*flags)->l = 1;
