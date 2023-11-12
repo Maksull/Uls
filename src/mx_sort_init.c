@@ -1,13 +1,13 @@
 #include "../inc/uls.h"
 
 // Function to compare two files based on their names
-bool compare_by_name(t_file* first, t_file* second) 
+static bool compare_by_name(t_file* first, t_file* second) 
 {
     return (mx_strcmp(first->name, second->name) > 0);
 }
 
 // Function to compare two files based on their sizes
-bool compare_by_size(t_file* first, t_file* second) 
+static bool compare_by_size(t_file* first, t_file* second) 
 {
     if (first->stat.st_size == second->stat.st_size) {
         return compare_by_name(first, second);
@@ -17,7 +17,7 @@ bool compare_by_size(t_file* first, t_file* second)
 }
 
 // Function to compare two files based on their modification times
-bool compare_by_mtime(t_file* first, t_file* second) 
+static bool compare_by_mtime(t_file* first, t_file* second) 
 {
     if (first->stat.st_mtime == second->stat.st_mtime) {
         return compare_by_name(first, second);
@@ -27,7 +27,7 @@ bool compare_by_mtime(t_file* first, t_file* second)
 }
 
 // Function to compare two files based on their access times
-bool compare_by_atime(t_file* first, t_file* second) 
+static bool compare_by_atime(t_file* first, t_file* second) 
 {
     if (first->stat.st_atime == second->stat.st_atime) {
         return compare_by_name(first, second);
@@ -37,7 +37,7 @@ bool compare_by_atime(t_file* first, t_file* second)
 }
 
 // Function to compare two files based on their change times
-bool compare_by_ctime(t_file* first, t_file* second) 
+static bool compare_by_ctime(t_file* first, t_file* second) 
 {
     if (first->stat.st_ctime == second->stat.st_ctime) {
         return compare_by_name(first, second);
