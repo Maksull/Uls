@@ -77,22 +77,15 @@ typedef struct s_file {
 int mx_uls_init(char** files, int file_count, t_uls_flags* flags);
 bool mx_is_implied_dir(const char* dir_name);
 int mx_get_total_blocks(t_file** files);
-char* mx_get_file_permissions(t_file* file, t_uls_flags* flags);
-char mx_get_file_type(mode_t mode);
 char* mx_get_file_path(const char* dir_name, const char* file_name);
 char* mx_get_file_size(long int f_size);
-void mx_get_file_lm_date(t_file **file, t_uls_flags* flags);
-char* mx_get_linked_file(t_file* file);
 
 // Function prototypes for files and file array handling
-t_file* mx_create_file_obj(const char* path, const char* name, t_uls_flags* flags);
-t_file* mx_create_default_file_obj(const char* dir_name, const char* name);
 void mx_handle_file_array(t_file** files, const char* dir_name, bool is_dir, bool is_single, t_uls_flags* flags);
 int mx_handle_dir(const char* dir_name, t_uls_flags* flags, bool is_single);
 
 // Function prototypes for printing file information
 void mx_output_files_l(t_file** files, bool is_dir, t_uls_flags* flags);
-void mx_output_file_l(t_file* file, t_uls_flags* flags);
 void mx_output_for_F(mode_t mode);
 void mx_output_default(t_file** files, t_uls_flags* flags);
 void mx_output_for_m(t_file** files, t_uls_flags* flags);
@@ -102,7 +95,6 @@ void mx_output_acl_info(const char* acl_str);
 void mx_output_file_xattr(const char* path, bool is_h_on);
 
 // Function prototypes for flag utility functions
-t_uls_flags* mx_get_uls_flags(int argc, const char** argv, int* flag_count);
 bool mx_is_uls_flags_applied(t_uls_flags* flags, char* file_name);
 void mx_add_flag(t_uls_flags** flags, char flag);
 
@@ -122,9 +114,8 @@ t_file* mx_swap_nodes(t_file* node1, t_file* node2);
 
 // Function prototypes for sorting
 void mx_sort_init(t_file** files, t_uls_flags* flags);
-void mx_sort_list(t_file** lst, bool (*cmp)(t_file* a, t_file* b));
+void mx_sort_list(t_file** list, bool (*cmp)(t_file* a, t_file* b));
 void mx_reverse_list(t_file** list);
-bool compare_by_name(t_file* first, t_file* second);
 
 // Miscellaneous utility functions
 float mx_round(float num, int precision);
