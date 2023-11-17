@@ -70,12 +70,12 @@ static int handle_directories(char** files, int file_count, int dir_count, t_uls
 
 // Compare strings for quicksort
 static bool cmp_strings(const char* a, const char* b) {
-    return mx_strcmp(a, b) < 0;
+    return mx_strcmp(a, b) > 0;
 }
 
 // Compare strings in reverse for quicksort
 static bool cmp_strings_r(const char* a, const char* b) {
-    return mx_strcmp(a, b) > 0;
+    return mx_strcmp(a, b) < 0;
 }
 
 // Partition function for quicksort
