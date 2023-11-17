@@ -110,6 +110,7 @@ void mx_reset_file_params_length(t_file** files, t_uls_flags* flags);
 void mx_clear_list(t_file** list);
 void mx_push_back(t_file** list, const char* dir_name, const char* file_name, t_uls_flags* flags);
 int mx_list_size(t_file* list);
+t_file* mx_swap_nodes(t_file* node1, t_file* node2);
 
 // Function prototypes for sorting
 void mx_sort_init(t_file** files, t_uls_flags* flags);
