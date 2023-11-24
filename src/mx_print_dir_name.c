@@ -3,12 +3,9 @@
 // Function to print the name of a directory followed by a colon and a newline
 void mx_print_dir_name(const char* dir_name) 
 {
-    // Print a newline for better formatting
-    mx_printstr("\n");
-
     // Print the directory name
     mx_printstr(dir_name);
 
     // Print a colon to separate the directory name from the contents
-    mx_printstr(":");
+    mx_printstr(":\n");
 }

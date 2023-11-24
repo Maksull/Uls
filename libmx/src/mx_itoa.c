@@ -1,39 +1,46 @@
 #include "libmx.h"
 
-char *mx_itoa(int number) {
-    if (number == 0)
+static int mx_digit_count(int number)
+{
+    int counter = 0;
+
+    do
     {
-        return "0";
+        number /= 10;
+        ++counter;
+    } while (number != 0);
+
+    return counter;
+}
+
+char *mx_itoa(int number)
+{
+    if (number == -2147483648) {
+        return mx_strdup("-2147483648");
     }
-    else if (number == -2147483648) 
+
+    char *result = mx_strnew(mx_digit_count(number));
+    int sign;
+    
+    if ((sign = number) < 0)
     {
-        return "-2147483648";
-    }
-    int temp = number;
-    int length = 0;
-    while (temp)
-    {
-        temp /=10;
-        length++;
-    }
-    char *str = malloc(length);
-    if (number < 0)
-    {
-        str[0] = '-';
         number = -number;
-        for (int i = length; i > 0; i--)
-        {
-            str[i] = (number % 10) + 48 + '\0';
-            number /= 10;
-        }
     }
-    else
+
+    int i = 0;
+    do {
+        result[i++] = number % 10 + 48; 
+    
+    } while ((number /= 10) > 0);
+    
+    if (sign < 0)
     {
-        for (int i = length - 1 ; i >= 0; i--)
-        {
-            str[i] = (number % 10) + 48 + '\0';
-            number /= 10;
-        }
+        result[i++] = '-';
     }
-    return str;
+    
+    result[i] = '\0';
+
+    mx_str_reverse(result);
+    
+    return result;
 }
