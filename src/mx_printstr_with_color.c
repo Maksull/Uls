@@ -1,11 +1,11 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
-static void print_name(t_entity* data) {
-    mx_printstr(data->name_str);
+static void print_name(t_object* data) {
+    mx_printstr(data->name);
     mx_printstr("\x1b[0m"); // reset color
 }
 
-static int print_frst(t_entity* data) {
+static int print_first(t_object* data) {
     mode_t mode = data->info_st.st_mode;
     if (IS_DIR(mode)) {
         mx_printstr("\033[34m");
@@ -25,7 +25,7 @@ static int print_frst(t_entity* data) {
     return 0;
 }
 
-static int print_sec(t_entity* data) {
+static int print_second(t_object* data) {
     mode_t mode = data->info_st.st_mode;
     if (IS_BLK(mode)) {
         mx_printstr("\033[34;46m");
@@ -45,12 +45,12 @@ static int print_sec(t_entity* data) {
     return 0;
 }
 
-void mx_printstr_with_color(t_entity* data) {
+void mx_printstr_G(t_object* data) {
     mode_t mode = data->info_st.st_mode;
 
-    if (print_frst(data) == 1)
+    if (print_first(data) == 1)
         return;
-    if (print_sec(data) == 1)
+    if (print_second(data) == 1)
         return;
 
     if (IS_FIFO(mode))
@@ -60,7 +60,7 @@ void mx_printstr_with_color(t_entity* data) {
     else if (IS_WHT(mode))
         mx_printstr("\033[36m");
     else {
-        mx_printstr(data->name_str);
+        mx_printstr(data->name);
         return;
     }
     print_name(data);

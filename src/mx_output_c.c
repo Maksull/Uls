@@ -1,12 +1,12 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
-static void print_cols(t_entity **name_arr, int rows, int num, int max_length) {
+static void print_cols(t_object **name_arr, int rows, int num, int max_length) {
     for (int a = 0; a < rows; a++) {
         for (int j = 0; a + j < num; j += rows) {
-            mx_printstr(name_arr[a + j]->name_str);
+            mx_printstr(name_arr[a + j]->name);
 
             if (name_arr[a + j + 1] && (a + j + rows < num)) {
-                mx_print_tab(mx_strlen(name_arr[a + j]->name_str), max_length);
+                mx_print_tab(mx_strlen(name_arr[a + j]->name), max_length);
             }
         }
         if (a != rows - 1) {
@@ -15,7 +15,7 @@ static void print_cols(t_entity **name_arr, int rows, int num, int max_length) {
     }
 }
 
-static void print_name_arr(t_entity **name_arr, int max_length, int wincol) {
+static void print_name_arr(t_object **name_arr, int max_length, int wincol) {
     int rows;
     int cols = (wincol / max_length) != 0 ? wincol / max_length : 1;
     int counter = 0;
@@ -37,16 +37,16 @@ static void print_name_arr(t_entity **name_arr, int max_length, int wincol) {
         mx_printchar('\n');
     } else {
         for (int a = 0; name_arr[a]; a++) {
-            mx_printstr(name_arr[a]->name_str);
+            mx_printstr(name_arr[a]->name);
             if (name_arr[a + 1]) {
-                mx_print_tab(mx_strlen(name_arr[a]->name_str), max_length);
+                mx_print_tab(mx_strlen(name_arr[a]->name), max_length);
             }
         }
         mx_printchar('\n');
     }
 }
 
-void mx_output_c(t_entity **name_arr) {
+void mx_output_c(t_object **name_arr) {
     struct winsize window;
     int max_length;
 
@@ -54,7 +54,7 @@ void mx_output_c(t_entity **name_arr) {
         return;
     }
 
-    max_length = mx_max_lenngth_name_arr(name_arr);
+    max_length = mx_get_max_length_name(name_arr);
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
 
     isatty(1) ? print_name_arr(name_arr, max_length, window.ws_col) : print_name_arr(name_arr, max_length, 80);

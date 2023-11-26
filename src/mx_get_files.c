@@ -1,17 +1,17 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
-static t_type *create_type() {
-    t_type *type = malloc(sizeof (t_type));
+static t_check_struct *create_check() {
+    t_check_struct *check = malloc(sizeof (t_check_struct));
 
-    type->n_d = 0;
-    type->n_e = 0;
-    type->n_f = 0;
-    type->i = 0;
+    check->check_dirs = 0;
+    check->check_errors = 0;
+    check->check_files = 0;
+    check->i = 0;
 
-    return type;
+    return check;
 }
 
-static void create_entities(t_entity ***files, t_entity ***dirs, t_entity ***errors, t_entity ***data) {
+static void create_objects(t_object ***files, t_object ***dirs, t_object ***errors, t_object ***data) {
     int a = 0;
     int dir_counter = 0;
     int err_counter = 0;
@@ -29,50 +29,50 @@ static void create_entities(t_entity ***files, t_entity ***dirs, t_entity ***err
     }
         
     if (a > 0) {
-        *files = malloc((a + 1) * sizeof(t_entity *));
+        *files = malloc((a + 1) * sizeof(t_object *));
     }
     if (dir_counter > 0) {
-        *dirs = malloc((dir_counter + 1) * sizeof(t_entity *));
+        *dirs = malloc((dir_counter + 1) * sizeof(t_object *));
     } 
     if (err_counter > 0) {
-        *errors = malloc((err_counter + 1) * sizeof(t_entity *));
+        *errors = malloc((err_counter + 1) * sizeof(t_object *));
     }
 }
 
-static void alloc_dir(t_entity **data, t_type *num, t_entity ***files, t_entity ***dirs) {
+static void obj_init(t_object **data, t_check_struct *num, t_object ***files, t_object ***dirs) {
     if (!IS_DIR((*data)->info_st.st_mode)) {
-        (*files)[num->n_f++] = mx_create_new_file_node((*data));
-        (*files)[num->n_f] = NULL;
+        (*files)[num->check_files++] = mx_create_new_file_node((*data));
+        (*files)[num->check_files] = NULL;
     }
     else {
-        (*dirs)[num->n_d++] = mx_create_new_file_node((*data));
-        (*dirs)[num->n_d] = NULL;
+        (*dirs)[num->check_dirs++] = mx_create_new_file_node((*data));
+        (*dirs)[num->check_dirs] = NULL;
     }
 }
 
-t_entity **mx_get_files(t_entity ***data, t_flag *flag) {
-    t_entity **file_arr = NULL;
-    t_entity **dir_arr = NULL;
-    t_entity **error_arr = NULL;
-    t_type *type = create_type();
+t_object **mx_get_files(t_object ***data, t_flag *flag) {
+    t_object **file_arr = NULL;
+    t_object **dir_arr = NULL;
+    t_object **error_arr = NULL;
+    t_check_struct *type = create_check();
 
-    create_entities(&file_arr, &dir_arr, &error_arr, data);
+    create_objects(&file_arr, &dir_arr, &error_arr, data);
 
     for (; (*data)[type->i] != NULL; type->i++) {
         if ((*data)[type->i]->error == NULL) {
-            alloc_dir(&(*data)[type->i], type, &file_arr, &dir_arr);
+            obj_init(&(*data)[type->i], type, &file_arr, &dir_arr);
         } else {
-            error_arr[type->n_e++] = mx_create_new_file_node((*data)[type->i]);
-            error_arr[type->n_e] = NULL;
+            error_arr[type->check_errors++] = mx_create_new_file_node((*data)[type->i]);
+            error_arr[type->check_errors] = NULL;
         }
     }
 
-    if (type->n_d > 1) {
-        flag->has_files = 1;
+    if (type->check_dirs > 1) {
+        flag->files = 1;
     }
 
-    mx_delete_entities(data, dir_arr);
-    mx_handle_error(&error_arr, flag);
+    mx_free_entities(data, dir_arr);
+    mx_print_invalid_dir(&error_arr, flag);
     free(type);
     
     return file_arr;

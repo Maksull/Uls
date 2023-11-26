@@ -1,8 +1,8 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
-static void print_link(t_entity *link, t_info *size) {
+static void print_link(t_object *link, t_obj_info *info) {
     char *link_count = mx_itoa(link->info_st.st_nlink);
-    char *max_count = mx_itoa(size->link);
+    char *max_count = mx_itoa(info->link);
 
     if (mx_strlen(link_count) < mx_strlen(max_count)) {
         int diff = mx_strlen(max_count) - mx_strlen(link_count);
@@ -15,9 +15,9 @@ static void print_link(t_entity *link, t_info *size) {
     free(max_count);
 }
 
-static void get_user_name(t_entity *entity, int usr) {
-    struct passwd *password = getpwuid(entity->info_st.st_uid);
-    char *name = password ? mx_strdup(password->pw_name) : mx_itoa(entity->info_st.st_uid);
+static void get_user_name(t_object *obj, int usr) {
+    struct passwd *password = getpwuid(obj->info_st.st_uid);
+    char *name = password ? mx_strdup(password->pw_name) : mx_itoa(obj->info_st.st_uid);
     int name_len = mx_strlen(name);
 
     mx_printstr(name);
@@ -30,9 +30,9 @@ static void get_user_name(t_entity *entity, int usr) {
     free(name);
 }
 
-static void get_group_name(t_entity *entity, int group) {
-    struct group *grp = getgrgid(entity->info_st.st_gid);
-    char *name = grp ? mx_strdup(grp->gr_name) : mx_itoa(entity->info_st.st_gid);
+static void get_group_name(t_object *obj, int group) {
+    struct group *grp = getgrgid(obj->info_st.st_gid);
+    char *name = grp ? mx_strdup(grp->gr_name) : mx_itoa(obj->info_st.st_gid);
     int name_len = mx_strlen(name);
 
     mx_printstr(name);
@@ -44,11 +44,11 @@ static void get_group_name(t_entity *entity, int group) {
     free(name);
 }
 
-static void mx_print_link(t_entity *link) {
+static void mx_print_link(t_object *link) {
     ssize_t size = link->info_st.st_size;
     ssize_t buf_size = (size == 0) ? 100 : size + 1;
     char * buf = mx_strnew(buf_size);
-    ssize_t nbytes = readlink(link->path_str, buf, buf_size);
+    ssize_t nbytes = readlink(link->path, buf, buf_size);
 
     mx_printstr(" -> ");
     if (nbytes >= 0)
@@ -56,9 +56,9 @@ static void mx_print_link(t_entity *link) {
     mx_strdel(&buf);
 }
 
-static void edit_time(t_entity *link, char *time, t_flag *flag) {
+static void print_time(t_object *link, char *time, t_flag *flag) {
     int stamp = 1565913600, num;
-    if (flag->has_T == 1) {
+    if (flag->T == 1) {
         for (int i = 4; i < time[i]; i++)
            mx_printchar(time[i]);
     } else {
@@ -74,39 +74,39 @@ static void edit_time(t_entity *link, char *time, t_flag *flag) {
     mx_printstr(" ");
 }
 
-static void print_link_and_color(t_entity *link, t_flag *flag) {
-    if (flag->has_G == 1) {
-        mx_printstr_with_color(link);
+static void print_link_and_color(t_object *link, t_flag *flag) {
+    if (flag->G == 1) {
+        mx_printstr_G(link);
 
         if (IS_LNK(link->info_st.st_mode)) {
             mx_print_link(link);
         }
 
     } else if (IS_LNK(link->info_st.st_mode)) {
-        mx_printstr(link->name_str);
+        mx_printstr(link->name);
         mx_print_link(link);
     } else {
-        mx_printstr(link->name_str);
+        mx_printstr(link->name);
     }
 }
 
-void mx_print_all(t_entity *entity, t_info *size, t_flag *flag) {
-    time_t *atime = &entity->info_st.st_atime;
-    time_t *chtime = &entity->info_st.st_ctime;
-    time_t *mtime = &entity->info_st.st_mtime;
+void mx_print_all(t_object *obj, t_obj_info *size, t_flag *flag) {
+    time_t *atime = &obj->info_st.st_atime;
+    time_t *chtime = &obj->info_st.st_ctime;
+    time_t *mtime = &obj->info_st.st_mtime;
 
-    mx_print_permissions(entity);
-    print_link(entity, size);
-    if ((flag->has_o == 1 && flag->has_g == 0) || (flag->has_l == 1 && flag->has_g == 0))
-        get_user_name(entity, size->user);
-    if ((flag->has_g == 1 && flag->has_o == 0) || (flag->has_l == 1 && flag->has_o == 0))
-        get_group_name(entity, size->group);
-    mx_print_size(entity, size);
-    if (flag->has_u == 1)
+    mx_print_permissions(obj);
+    print_link(obj, size);
+    if ((flag->o == 1 && flag->g == 0) || (flag->l == 1 && flag->g == 0))
+        get_user_name(obj, size->user);
+    if ((flag->g == 1 && flag->o == 0) || (flag->l == 1 && flag->o == 0))
+        get_group_name(obj, size->group);
+    mx_print_obj_info(obj, size);
+    if (flag->u == 1)
         mtime = atime;
-    if (flag->has_c == 1)
+    if (flag->c == 1)
         mtime = chtime;
-    edit_time(entity, ctime(mtime), flag);
-    print_link_and_color(entity, flag);
+    print_time(obj, ctime(mtime), flag);
+    print_link_and_color(obj, flag);
     mx_printchar('\n');
 }

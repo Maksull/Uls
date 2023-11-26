@@ -1,4 +1,4 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
 bool mx_str_contains(char *str, char c) {
     if (str == NULL) {

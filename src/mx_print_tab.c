@@ -1,4 +1,4 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
 void mx_print_tab(int length, int max_length) {
     int counter = 0;

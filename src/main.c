@@ -1,14 +1,14 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
 int main(int argc, char *argv[]) {
     int counter = 1;
-    t_flag *flag = mx_get_flags(argv, &counter);
-    t_entity **data = mx_get_name_arr(argc, argv, counter);
-    mx_sort_content(&data, flag);
+    t_flag *flag = mx_get_flags_applied(argv, &counter);
+    t_object **data = mx_get_name_arr(argc, argv, counter);
+    mx_sort_objects(&data, flag);
     int exit_code = 0;
 
     if (data) {
-        mx_opendir(&data, flag);
+        mx_process_dir(&data, flag);
     }
 
     if (flag->exit_code == 1) {

@@ -1,6 +1,6 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
-static char **build_name_arr_arr(int argc, char **argv, int i, int *count) {
+static char **name_arr_init(int argc, char **argv, int i, int *count) {
     int a = i;
     char **name_arr = NULL;
 
@@ -23,12 +23,12 @@ static char **build_name_arr_arr(int argc, char **argv, int i, int *count) {
     return name_arr;
 }
 
-static t_entity *create_new_li_node(char *data) {
-    t_entity *new_node = (t_entity *)malloc(1 * sizeof(t_entity));
+static t_object *obj_node_in_list_init(char *data) {
+    t_object *new_node = (t_object *)malloc(1 * sizeof(t_object));
 
     new_node->error = NULL;
-    new_node->path_str = mx_strdup(data);
-    new_node->name_str = mx_strdup(data);
+    new_node->path = mx_strdup(data);
+    new_node->name = mx_strdup(data);
 
     if (lstat(data, &(new_node->info_st)) == -1) {
         new_node->error = mx_strdup(strerror(errno));	
@@ -39,22 +39,22 @@ static t_entity *create_new_li_node(char *data) {
     return new_node;
 }
 
-static t_entity **build_list(char **name, int count) {
-    t_entity **new_list = malloc(count * sizeof(t_entity *));
+static t_object **list_init(char **name, int count) {
+    t_object **new_list = malloc(count * sizeof(t_object *));
     int a = 0;
 
     for (a = 0; name[a]; a++) {
-        new_list[a] = create_new_li_node(name[a]);
+        new_list[a] = obj_node_in_list_init(name[a]);
     }
 
     new_list[a] = NULL;
     return new_list;
 }
 
-t_entity **mx_get_name_arr(int argc, char **argv, int i) {
+t_object **mx_get_name_arr(int argc, char **argv, int i) {
     int counter = 0;
-    char **name = build_name_arr_arr(argc, argv, i, &counter);
-    t_entity **data = build_list(name, counter);
+    char **name = name_arr_init(argc, argv, i, &counter);
+    t_object **data = list_init(name, counter);
 
     mx_del_strarr(&name);
 

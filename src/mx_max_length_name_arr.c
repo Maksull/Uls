@@ -1,11 +1,11 @@
-#include "uls.h"
+#include "../inc/uls.h"
 
-int mx_max_lenngth_name_arr(t_entity **name_arr) {
+int mx_get_max_length_name(t_object **name_arr) {
     int max_length = 0;
     int temp_length = 0;
 
     for (int a = 0; name_arr[a]; a++) {
-        temp_length = mx_strlen(name_arr[a]->name_str);
+        temp_length = mx_strlen(name_arr[a]->name);
         if (temp_length > max_length) {
             max_length = temp_length;
         }
