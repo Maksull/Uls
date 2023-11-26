@@ -43,7 +43,7 @@ typedef struct s_flag {
     int files;
     int is_force;
     int exit_code;
-}t_flag;
+} t_flag;
 
 typedef struct s_obj_info {
     int link;
@@ -51,7 +51,7 @@ typedef struct s_obj_info {
     int group;
     int user;
     bool is_develop;
-}t_obj_info;
+} t_obj_info;
 
 typedef struct s_object {
     char *name;
@@ -59,14 +59,14 @@ typedef struct s_object {
     char *error;
     struct stat info_st;
     struct s_object **next;
-}t_object;
+} t_object;
 
 typedef struct s_check_struct {
     int check_files;
     int check_dirs;
     int check_errors;
     int i;
-}t_check_struct;
+} t_check_struct;
 
 static char *FLAGS = "ACGRSTcfglmortux1";
 

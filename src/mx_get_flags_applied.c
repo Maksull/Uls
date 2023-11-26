@@ -1,33 +1,37 @@
 #include "../inc/uls.h"
 
+// Checks if the given string is a valid flag
 static bool is_str_flag(char *flag) {
     if (flag[0] == '-' && mx_is_alpha(flag[1])) {
         return true;
     }
-
     return false;
 }
 
+// Validates the flags provided as command-line arguments
 static void validate_flags(char *argv[]) {
     char *flags_str = argv[1] != NULL ? argv[1] : NULL;
 
     if (flags_str == NULL) {
-        return;
+        return; // No flags provided
     }
 
     if (!is_str_flag(flags_str)) {
-        return;
+        return; // Invalid flag format
     }
 
+    // Check if each character in the flag string is a valid flag
     for (int i = 1; flags_str[i] != '\0'; i++) {
         if (!mx_str_contains(FLAGS, flags_str[i])) {
-            mx_print_wrong_usage(flags_str[i]);
+            mx_print_wrong_usage(flags_str[i]); // Print error for invalid flag
             exit(1);
         }
     }
 }
 
+// Applies the corresponding settings based on the given flag character
 static void apply_flags(t_flag **flag, char flag_char) {
+    // Handle special cases based on the flag character
     if (flag_char == 'T') {
         (*flag)->T = 1;
     } else if (flag_char == 'G' && isatty(1)) {
@@ -52,11 +56,12 @@ static void apply_flags(t_flag **flag, char flag_char) {
         (*flag)->A = 1;
     } else if (flag_char == 'g') {
         (*flag)->g = 1;
-		(*flag)->l = 1;
-	} else if (flag_char == 'o') {
+        (*flag)->l = 1;
+    } else if (flag_char == 'o') {
         (*flag)->o = 1;
-		(*flag)->l = 1;
-	} else {
+        (*flag)->l = 1;
+    } else {
+        // Handle generic cases for flags
         (*flag)->X = 0;
         (*flag)->l = 0;
         (*flag)->C = 0;
@@ -74,16 +79,17 @@ static void apply_flags(t_flag **flag, char flag_char) {
         } else if (flag_char == 'm') {
             (*flag)->m = 1;
         } else {
-            mx_print_wrong_usage(flag_char);
+            mx_print_wrong_usage(flag_char); // Print error for unrecognized flag
             free(*flag);
             flag = NULL;
             exit(1);
         }
-    } 
-} 
+    }
+}
 
+// Retrieves and applies flags from the command-line arguments
 t_flag *mx_get_flags_applied(char *argv[], int *i) {
-    validate_flags(argv);
+    validate_flags(argv); // Validate flags before processing
     t_flag *flag = malloc(sizeof(t_flag));
     flag->reverse = 1;
 
@@ -91,20 +97,20 @@ t_flag *mx_get_flags_applied(char *argv[], int *i) {
         if (argv[(*i)][0] == '-') {
             if (argv[(*i)][1] == '-') {
                 (*i)++;
-                break;
+                break; // End of flags, move to file arguments
             }
             if (argv[(*i)][1] == '\0') {
-                break;
+                break; // End of flags, move to file arguments
             }
             for (int j = 1; argv[(*i)][j]; j++) {
-                apply_flags(&flag, argv[(*i)][j]);
+                apply_flags(&flag, argv[(*i)][j]); // Apply settings based on flag characters
             }
         } else {
-            break;
+            break; // End of flags, move to file arguments
         }
 
         (*i)++;
     }
 
-    return flag;
+    return flag; // Return the flag settings
 }
