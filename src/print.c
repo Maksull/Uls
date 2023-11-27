@@ -1,69 +1,75 @@
 #include "../inc/uls.h"
 
+// Function to apply color to file names based on their mode
 static void apply_color(mode_t mode) {
     switch (mode & S_IFMT) {
+        // Color codes for different file types
         case S_IFBLK:
-            mx_printstr("\033[34;46m");
+            mx_printstr("\033[34;46m");  // Blue background, Cyan text (Block special)
             break;
         case S_IFCHR:
-            mx_printstr("\033[34;43m");
+            mx_printstr("\033[34;43m");  // Blue background, Yellow text (Character special)
             break;
         case S_IFDIR:
+            // Directory handling based on permission flags
             if (mode & S_IWOTH) {
                 if (mode & S_ISTXT) {
-                    mx_printstr("\033[30;42m");
+                    mx_printstr("\033[30;42m");  // Black background, Green text (Sticky bit set)
                 } else {
-                    mx_printstr("\033[30;43m");
+                    mx_printstr("\033[30;43m");  // Black background, Yellow text (No sticky bit)
                 }
             } else {
-                mx_printstr("\033[34m");
+                mx_printstr("\033[34m");  // Blue text (Regular directory)
             }
             break;
         case S_IFIFO:
-            mx_printstr("\033[33m");
+            mx_printstr("\033[33m");  // Yellow text (FIFO/pipe)
             break;
         case S_IFLNK:
-            mx_printstr("\033[35m");
+            mx_printstr("\033[35m");  // Magenta text (Symbolic link)
             break;
         case S_IFSOCK:
-            mx_printstr("\033[32m");
+            mx_printstr("\033[32m");  // Green text (Socket)
             break;
         default:
+            // Handling executable files or other cases with executable permissions
             if (mode & (S_IXUSR | S_IXGRP | S_IXOTH)) {
                 if (mode & S_ISUID) {
-                    mx_printstr("\033[30;41m");
+                    mx_printstr("\033[30;41m");  // Black background, Red text (Set UID)
                 } else if (mode & S_ISGID) {
-                    mx_printstr("\033[30;46m");
+                    mx_printstr("\033[30;46m");  // Black background, Cyan text (Set GID)
                 } else {
-                    mx_printstr("\033[31m");
+                    mx_printstr("\033[31m");  // Red text (Executable file)
                 }
             }
             break;
     }
 }
 
+// Function to add classifiers like '/', '|', '@', etc., to file names based on their mode
 static int add_classifier(mode_t mode, bool slash_only) {
     char classifier = '\0';
 
     switch (mode & S_IFMT) {
         case S_IFDIR:
-            classifier = '/';
+            classifier = '/';  // Directory
             break;
         case S_IFIFO:
-            classifier = '|';
+            classifier = '|';  // FIFO/pipe
             break;
         case S_IFLNK:
-            classifier = '@';
+            classifier = '@';  // Symbolic link
             break;
         case S_IFSOCK:
-            classifier = '=';
+            classifier = '=';  // Socket
             break;
         case S_IFREG:
             if (mode & (S_IXUSR | S_IXGRP | S_IXOTH))
-                classifier = '*';
+                classifier = '*';  // Executable file
             break;
     }
 
+    // Adding the classifier to the file name if applicable
     if (classifier != '\0') {
         if (slash_only && classifier != '/')
             return 0;
@@ -73,6 +79,7 @@ static int add_classifier(mode_t mode, bool slash_only) {
     return 0;
 }
 
+// Function to replace non-printable characters in file names with '?'
 static char *replace_non_printable_characters(const char *name) {
     char *temp = mx_strdup(name);
     for (int i = 0; temp[i] != '\0'; i++)
@@ -81,37 +88,42 @@ static char *replace_non_printable_characters(const char *name) {
     return temp;
 }
 
+// Function to print file information (name, colors, classifiers) based on configuration settings
 int mx_print_file_info(t_file_info *file_info, t_configuration *configuration) {
     if (configuration->use_colors)
-        apply_color(file_info->stat.st_mode);
-    if (configuration->display_non_printable_characters) {
-        char *str = replace_non_printable_characters(file_info->name);
-        mx_printstr(str);
-        free(str);
-    } else
-        mx_printstr(file_info->name);
-    if (configuration->use_colors)
-        mx_printstr("\033[0m");
+        apply_color(file_info->stat.st_mode); // Apply color to file names based on their mode
 
-    int length = mx_strlen(file_info->name);
+    if (configuration->display_non_printable_characters) {
+        char *str = replace_non_printable_characters(file_info->name); // Replace non-printable characters in file names
+        mx_printstr(str); // Print the modified file name
+        free(str);
+    } else {
+        mx_printstr(file_info->name); // Print the file name
+    }
+
+    if (configuration->use_colors)
+        mx_printstr("\033[0m"); // Reset color settings
+
+    int length = mx_strlen(file_info->name); // Calculate the length of the file name
     if (configuration->classify || configuration->add_only_slash_to_directories)
-        length += add_classifier(file_info->stat.st_mode, configuration->add_only_slash_to_directories);
-    return length;
+        length += add_classifier(file_info->stat.st_mode, configuration->add_only_slash_to_directories); // Add classifiers to file names
+    return length; // Return the total length of the printed file name
 }
 
+// Function to determine the printing format and call the corresponding printing function
 void mx_print_files_info(t_list *files_info, t_configuration *configuration) {
     switch (configuration->format) {
         case ONE_COLUMN:
-            mx_print_one_column(files_info, configuration);
+            mx_print_one_column(files_info, configuration); // Print files in a single column
             break;
         case MULTI_COLUMN:
-            mx_print_multi_column(files_info, configuration);
+            mx_print_multi_column(files_info, configuration); // Print files in multiple columns
             break;
         case STREAM:
-            mx_print_stream(files_info, configuration);
+            mx_print_stream(files_info, configuration); // Print files in a stream
             break;
         case DETAILED:
-            mx_print_with_info(files_info, configuration);
+            mx_print_with_info(files_info, configuration); // Print detailed information for files
             break;
         default:
             break;
