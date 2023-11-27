@@ -2,28 +2,23 @@
 
 char **mx_strsplit(const char *s, char c) {
     if (s == NULL)
-    {
         return NULL;
-    } 
-    
-    int amount = mx_count_words(s,c);
-    char **result = (char **)malloc((amount + 1) * sizeof(char *));
-    int i = 0, count = 0;
-    for (int k = 0; k < mx_strlen(s) + 1; k++)
-    {
-        if ((s[k] == c || s[k] == '\0') && count > 0)
-        {
-            result[i] = mx_strnew(count);
-            mx_strncpy(result[i], &s[k-count], count);
+    int count = mx_count_words(s, c);
+    char **result = (char **) malloc((count + 1) * sizeof(char *));
+    int i = 0;
+    for (int counter = 0; counter < count; counter++) {
+        int word_size = 0;
+        while (s[i] != c && s[i] != '\0') {
+            word_size++;
             i++;
-            count = 0;
         }
-        else if (s[k] != c)
-        {
-            count++;
+        if (word_size == 0 && i < mx_strlen(s)) {
+            i++;
+            counter--;
+        } else {
+            result[counter] = mx_strndup(&s[i - word_size], word_size);
         }
     }
-    result[amount] = NULL;
-
+    result[count] = NULL;
     return result;
 }

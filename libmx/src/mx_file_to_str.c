@@ -1,27 +1,55 @@
 #include "libmx.h"
 
-char *mx_file_to_str(const char *file)
-{
-    int f = open(file, O_RDONLY);
-    if(f == -1){
-        close(f);
+static int calculate_length(const char *file) {
+    int length = 0;
+    char buf[1];
+
+    int fd = open(file, O_RDONLY);
+    if (fd == -1)
+        return -1;
+    int n_read;
+    while ((n_read = read(fd, buf, 1)) != 0) {
+        if (n_read == -1) {
+            close(fd);
+            return -1;
+        }
+        length++;
+    }
+    if (close(fd) == -1)
+        return -1;
+    return length;
+}
+
+char *mx_file_to_str(const char *file) {
+    if (file == NULL)
+        return NULL;
+    int length = calculate_length(file);
+    if (length == -1 || length == 0)
+        return NULL;
+
+    char *result = mx_strnew(length);
+    if (result == NULL)
+        return NULL;
+
+    int fd = open(file, O_RDONLY);
+    if (fd == -1) {
+        mx_strdel(&result);
         return NULL;
     }
 
-    int len = 0;
-    char c;
-    int check = read(f, &c, 1);
-    while (check > 0) {
-        check = read(f, &c, 1);
-        len++;
+    int i = 0;
+    int n_read;
+    char buf[1];
+    while ((n_read = read(fd, buf, 1)) != 0) {
+        if (n_read == -1) {
+            mx_strdel(&result);
+            return NULL;
+        }
+        result[i++] = buf[0];
     }
-    close(f);
-
-    f = open(file, O_RDONLY);
-
-    char *result = mx_strnew(len);
-    read(f, result, len);
-    close(f);
-    
+    if (close(fd) == -1) {
+        mx_strdel(&result);
+        return NULL;
+    }
     return result;
 }

@@ -1,57 +1,32 @@
-# Makefile for a C library
-
-# Output library name
-LIBRARY_NAME = libmx.a
-
-# Source and object directories
-SOURCE_DIR = src
-OBJECT_DIR = obj
-INCLUDE_DIR = inc
-
-# Source files and object files
-SOURCE_FILES = $(wildcard $(SOURCE_DIR)/*.c)
-OBJECT_FILES = $(patsubst $(SOURCE_DIR)/%.c,$(OBJECT_DIR)/%.o,$(SOURCE_FILES))
-
-# Header files
-INCLUDE_FILES = $(wildcard $(INCLUDE_DIR)/*.h)
-
-# Compiler and flags
+OBJS_FOLDER = obj
+INCS_FOLDER = inc
+SRCS_FOLDER = src
+NAME = libmx.a
+SRCS := $(wildcard $(SRCS_FOLDER)/*.c)
+INCS := $(wildcard $(INCS_FOLDER)/*.h)
+OBJS := $(patsubst $(SRCS_FOLDER)/%.c, $(OBJS_FOLDER)/%.o, $(SRCS))
 CC = clang
-CFLAGS = -std=c11 -Wall -Wextra -Werror -Wpedantic -g
+CFLAGS = -std=c11 -Wall -Wextra -Werror -Wpedantic
 
-# Archive tool and flags
-AR = ar
-AFLAGS = rcs
+.PHONY: all install clean uninstall reinstall
 
-# Commands
-MKDIR = mkdir -p
-RM = rm -rf
+all: install
 
-# Phony targets
-.PHONY: all uninstall clean reinstall
+install: $(NAME)
 
-# Default target
-all: $(LIBRARY_NAME)
+$(NAME): $(OBJS_FOLDER) $(OBJS)
+	ar rsc $(NAME) $(OBJS)
 
-# Rule to build the library
-$(LIBRARY_NAME): $(OBJECT_FILES)
-	$(AR) $(AFLAGS) $@ $^
+$(OBJS_FOLDER):
+	mkdir $(OBJS_FOLDER)
 
-# Rule to build object files
-$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.c $(INCLUDE_FILES) | $(OBJECT_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -I $(INCLUDE_DIR)
+$(OBJS_FOLDER)/%.o:$(SRCS_FOLDER)/%.c $(INCS)
+	$(CC) $(CFLAGS) -I $(INCS_FOLDER) -c $< -o $@
 
-# Ensure object directory exists
-$(OBJECT_DIR):
-	$(MKDIR) $@
-
-# Clean up object files
-clean:
-	$(RM) $(OBJECT_DIR)
-
-# Remove the library and object files
 uninstall: clean
-	$(RM) $(LIBRARY_NAME)
+	rm -f $(NAME)
 
-# Uninstall and then build the library
+clean:
+	rm -rf $(OBJS_FOLDER)
+
 reinstall: uninstall all

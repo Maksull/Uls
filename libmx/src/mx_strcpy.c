@@ -1,14 +1,14 @@
 #include "libmx.h"
 
-char *mx_strcpy(char *dst, const char *src) 
-{
-    char *original_dst = dst;
-    
-    while (*src) {
-        *dst++ = *src++;
+char *mx_strcpy(char *dst, const char *src) {
+    int counter = 0;
+
+    while (src[counter] != '\0') {
+        dst[counter] = src[counter];
+        counter++;
     }
-    
-    *dst = '\0';
-    
-    return original_dst;
+
+    dst[counter] = '\0';
+
+    return dst;
 }

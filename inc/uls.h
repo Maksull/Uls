@@ -2,115 +2,117 @@
 #define ULS_H
 
 #include "../libmx/inc/libmx.h"
-#include <string.h>
+
+#include <sys/ioctl.h>
 #include <time.h>
-#include <dirent.h>
-#include <pwd.h>
-#include <grp.h>
+#include <stdbool.h>
 #include <errno.h>
+#include <string.h>
+#include <dirent.h>
+#include <grp.h>
+#include <pwd.h>
 #include <sys/acl.h>
 #include <sys/stat.h>
-#include <sys/xattr.h>
-#include <sys/ioctl.h>
+#include <sys/syslimits.h>
 #include <sys/types.h>
+#include <sys/xattr.h>
+#include <unistd.h>
 
-#define IS_BLK(mode) (((mode) & S_IFMT) == S_IFBLK)
-#define IS_CHR(mode) (((mode) & S_IFMT) == S_IFCHR)
-#define IS_DIR(mode) (((mode) & S_IFMT) == S_IFDIR)
-#define IS_LNK(mode) (((mode) & S_IFMT) == S_IFLNK)
-#define IS_SOCK(mode) (((mode) & S_IFMT) == S_IFSOCK)
-#define IS_FIFO(mode) (((mode) & S_IFMT) == S_IFIFO)
-#define IS_WHT(mode) (((mode) & S_IFMT) == S_IFWHT)
-#define IS_REG(mode) (((mode) & S_IFMT) == S_IFREG)
-#define IS_EXEC(mode) ((mode) & S_IXUSR)
+//Structs
+typedef enum e_time_type {
+    LAST_MODIFICATION,    // default
+    LAST_METADATA_CHANGE, // -c
+    LAST_ACCESS,          // -u
+    LAST_CREATION,        // -U
+} t_time_type;
 
-typedef struct s_flag {
-    int A;
-    int C;
-    int G;
-    int S;
-    int T;
-    int c;
-    int g;
-    int l;
-    int m;
-    int o;
-    int t;
-    int u;
-    int X;
-    int recursion;
-    int reverse;
-    int files;
-    int is_force;
-    int exit_code;
-} t_flag;
+typedef enum e_sort_type {
+    BY_NAME,  // default
+    BY_TIME,  // -t
+    BY_SIZE,  // -S
+    UNSORTED, // -f
+} t_sort_type;
 
-typedef struct s_obj_info {
-    int link;
-    int size;
-    int group;
-    int user;
-    bool is_develop;
-} t_obj_info;
+typedef enum e_output_format{
+    ONE_COLUMN,   // -1
+    MULTI_COLUMN, // -C
+    STREAM,       // -m
+    DETAILED,     // -l
+} t_output_format;
 
-typedef struct s_object {
-    char *name;
+typedef enum e_ignore_type{
+    HIDDEN,        // default
+    DOTS,          // -A
+    NOT_IGNORED,   // -a
+} t_ignore_type;
+
+typedef struct s_configuration {
+    t_time_type time_type;
+    t_sort_type sort_type;
+    t_output_format format;
+    t_ignore_type ignore_type;
+    bool use_recursion;                     // -R
+    bool use_colors;                        // -G
+    bool classify;                          // -F
+    bool add_only_slash_to_directories;     // -p
+    bool sort_reverse;                      // -r
+    bool sort_horizontally;                 // -x
+    bool display_human_readable_size;       // -h
+    bool display_numeric_IDs;               // -n
+    bool display_non_printable_characters;  // -q
+    bool acl;                               // -e
+    bool full_time_info;                    // -T
+    bool extended_attributes;               // -@
+    bool hide_owner_information;            // -g
+    bool hide_group_information;            // -o
+    bool follow_symbolic_links;             // -H
+} t_configuration;
+
+//File details
+typedef struct s_file_info {
     char *path;
-    char *error;
-    struct stat info_st;
-    struct s_object **next;
-} t_object;
+    char *name;
+    char *user;
+    char *link;
+    char *group;
+    char **xattr_keys;
+    acl_t acl;
+    struct stat stat;
+    struct timespec timespec;
+} t_file_info;
 
-typedef struct s_check_struct {
-    int check_files;
-    int check_dirs;
-    int check_errors;
-    int i;
-} t_check_struct;
+typedef struct s_width {
+    int links;
+    int user;
+    int group;
+    int size;
+} t_width;
 
-static char *FLAGS = "ACGRSTcfglmortux1";
+//Input configuration
+t_configuration *mx_parse_configuration(int argc, char *argv[]);
 
-// Flags
-t_flag *mx_get_flags_applied(char *argv[], int *i);
+//Files
+t_file_info *mx_get_file_info(const char *dir, const char *name, t_configuration *configuration);
+void mx_free_file_info(t_file_info *file_info);
+void mx_free_file_list_info(t_list *files_info);
 
-// Processng dirs and files
-void mx_process_dir(t_object ***name_arr, t_flag *flag);
-int mx_get_max_length_name(t_object **name_arr);
-t_object **mx_get_name_arr(int argc, char **argv, int i);
-t_object **mx_get_files(t_object ***data, t_flag *flag);
-void mx_sort_objects(t_object ***disp, t_flag *flag);
-void mx_free_files(t_object ***data, t_flag *flag);
-void mx_free_entities(t_object ***data, t_object **dirs);
-void mx_free_arr(t_object ***data);
+//Dirs
+bool mx_sort_print_dirs(t_list *dirs, t_configuration *configuration, bool must_print_names);
+bool mx_sort_print_dir(t_file_info *file_info, t_configuration *configuration, bool must_print_name);
+blkcnt_t mx_calculate_count_blocks(t_list *files);
+bool mx_get_dir_entries(t_list **entries, const char *name, t_configuration *configuration);
+bool mx_is_ignored(const char *name, t_ignore_type ignore_type);
 
-// Output functions
-void mx_output_selector(t_object ***name_arr, t_flag *flag, int flag_num);
-void mx_output_l(t_object **name_arr, t_flag *flag, int flag_num);
-void mx_output_c(t_object **name_arr);
-void mx_output_x(t_object **name_arr);
-void mx_output_G(t_object **name_arr, t_flag *flag);
-void mx_output_m(t_object **name_arr, t_flag *flag);
-void mx_output_default(t_object ***data, t_flag *flag);
+//Sorting
+void mx_sort_filenames(t_list *filenames, t_sort_type sort_type);
+void mx_sort_file_list_info(t_list *files_info, t_sort_type sort_type, bool isReversed);
 
-// Print functions
-void mx_print_permissions(t_object *obj);
-void mx_print_obj_info(t_object *obj, t_obj_info *size);
-void mx_print_all(t_object *obj, t_obj_info *size, t_flag *flag);
-void mx_printstr_G(t_object *data);
-void mx_print_tab(int length, int max_length);
-
-// Error handling
-void mx_printerr(const char *s);
-void mx_print_invalid_dir(t_object ***error, t_flag *flag);
-void mx_print_wrong_usage(char flag);
-
-// Util functions
-void mx_join(char **res, char *s2);
-bool mx_is_alpha(char c);
-bool mx_str_contains(char *str, char c);
-char *mx_get_device_ID_major_number(t_object *obj);
-char *mx_get_device_ID_minor_number(t_object *obj);
-t_object *mx_create_new_file_node(t_object *arg);
+//Output
+int mx_print_file_info(t_file_info *files_info, t_configuration *configuration);
+void mx_print_one_column(t_list *files_info, t_configuration *configuration);
+void mx_print_multi_column(t_list *files_info, t_configuration *configuration);
+void mx_print_with_info(t_list *files_info, t_configuration *configuration);
+void mx_print_stream(t_list *files_info, t_configuration *configuration);
+void mx_print_files_info(t_list *files_info, t_configuration *configuration);
 
 #endif
-

@@ -1,48 +1,27 @@
 #include "libmx.h"
 
 char *mx_replace_substr(const char *str, const char *sub, const char *replace) {
-    if (str == NULL || sub == NULL || replace == NULL) {
+    if (str == NULL || sub == NULL || replace == NULL)
         return NULL;
+    if (*sub == '\0') {
+        char *result = mx_strnew(mx_strlen(str));
+        result = mx_strcpy(result, str);
+        return result;
     }
+    int substr_number = mx_count_substr(str, sub);
+    char *result = mx_strnew(mx_strlen(str) - mx_strlen(sub) * substr_number + mx_strlen(replace) * substr_number);
+    char *current_ptr = result;
 
-    int str_len = mx_strlen(str);
-    int sub_len = mx_strlen(sub);
-    int replace_len = mx_strlen(replace);
-
-    int count = 0;
-    const char *ptr = str;
-
-    while ((ptr = mx_strstr(ptr, sub)) != NULL) {
-        count++;
-        ptr += sub_len;
+    char *sub_ptr = mx_strstr(str, sub);
+    while (sub_ptr != NULL) {
+        mx_strncpy(current_ptr, str, sub_ptr - str);
+        current_ptr += sub_ptr - str;
+        str = sub_ptr + mx_strlen(sub);
+        mx_strcat(current_ptr, replace);
+        current_ptr += mx_strlen(replace);
+        sub_ptr = mx_strstr(str, sub);
     }
-
-    if (count == 0) {
-        return mx_strdup(str);
-    }
-
-    int result_len = str_len + (replace_len - sub_len) * count;
-    char *result = (char *)malloc(result_len + 1);
-    if (result == NULL) {
-        return NULL;
-    }
-
-    char *dest = result;
-    const char *src = str;
-
-    while (*src) {
-        if (mx_strstr(src, sub) == src) {
-            mx_strcpy(dest, replace);
-            dest += replace_len;
-            src += sub_len;
-        } else {
-            *dest = *src;
-            dest++;
-            src++;
-        }
-    }
-
-    *dest = '\0';
+    mx_strcat(current_ptr, str);
 
     return result;
 }

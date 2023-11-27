@@ -1,28 +1,14 @@
 #include "libmx.h"
 
-bool mx_is_start_substr(const char *str, const char* sub)
-{
-        while (*str && *sub && *str == *sub)
-        {
-            str++;
-            sub++;
-        }
-        if (!*sub) 
-        {
-            return true; 
-        }
-        
-        return false;
-}
-
 char *mx_strstr(const char *haystack, const char *needle) {
-    while (*haystack) {
-        if (mx_is_start_substr(haystack,needle)) 
-        {
-            return (char*)haystack; 
+    if (mx_strlen(needle) == 0)
+        return (char *) haystack;
+    if (mx_strlen(haystack) < mx_strlen(needle))
+        return NULL;
+    for (int i = 0; i < mx_strlen(haystack); i++) {
+        if (mx_strncmp(&haystack[i], needle, mx_strlen(needle)) == 0) {
+            return mx_strchr(&haystack[i], needle[0]);
         }
-        haystack++;
     }
-
     return NULL;
 }

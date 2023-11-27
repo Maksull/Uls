@@ -1,0 +1,79 @@
+#include "../inc/uls.h"
+
+static int calculate_max_width(t_list *files_info) {
+    int max_width = 0;
+    while (files_info != NULL) {
+        t_file_info *file_info = files_info->data;
+        int length = mx_strlen(file_info->name);
+        if (max_width < length)
+            max_width = length;
+        files_info = files_info->next;
+    }
+    return max_width;
+}
+
+static t_file_info **list_to_file_info_array(t_list *files_info, int *file_number) {
+    *file_number = mx_list_size(files_info);
+    if (file_number == 0)
+        return NULL;
+
+    t_file_info **file_info_array = malloc(sizeof(t_file_info * ) * (*file_number));
+    for (int i = 0; i < *file_number; i++) {
+        file_info_array[i] = files_info->data;
+        files_info = files_info->next;
+    }
+
+    return file_info_array;
+}
+
+void mx_print_multi_column(t_list *files_info, t_configuration *configuration) {
+    int tabwidth = 8;
+    if (configuration->use_colors)
+        tabwidth = 1;
+
+    int width = calculate_max_width(files_info);
+    if (configuration->classify || configuration->add_only_slash_to_directories)
+        width++;
+    width = (width + tabwidth) & ~(tabwidth - 1);
+    int terminal_width = 80;
+    if (isatty(1)) {
+        struct winsize w;
+        ioctl(0, TIOCGWINSZ, &w);
+        terminal_width = w.ws_col;
+    }
+
+    int column_number = terminal_width / width;
+    if (column_number <= 1) {
+        mx_print_one_column(files_info, configuration);
+        return;
+    }
+
+    int file_number;
+    t_file_info **array = list_to_file_info_array(files_info, &file_number);
+    int row_number = (file_number + column_number - 1) / column_number;
+
+    int index = 0;
+    for (int i = 0; i < row_number; i++) {
+        if (!configuration->sort_horizontally)
+            index = i;
+        for (int j = 0; j < column_number; j++) {
+            int printed = mx_print_file_info(array[index], configuration);
+            if (configuration->sort_horizontally)
+                index++;
+            else
+                index += row_number;
+            if (index >= file_number)
+                break;
+            int tabs = (width - printed + tabwidth - 1) / tabwidth;
+            for (int i = 0; i < tabs; i++) {
+                if (tabwidth == 1)
+                    mx_printchar(' ');
+                else
+                    mx_printchar('\t');
+            }
+        }
+        mx_printchar('\n');
+    }
+    if (array != NULL)
+        free(array);
+}

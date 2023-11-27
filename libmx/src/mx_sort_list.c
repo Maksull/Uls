@@ -1,25 +1,23 @@
 #include "libmx.h"
 
-static void swap(void **s1, void **s2) 
-{
-    if (*s1 != *s2) {
-        *s1 = (void *)((size_t)(*s1) + (size_t)(*s2));
-        *s2 = (void *)((size_t)(*s1) - (size_t)(*s2));
-        *s1 = (void *)((size_t)(*s1) - (size_t)(*s2));
-    }
+static void swap_data(t_list *list) {
+    void *temp_data = list->data;
+    list->data = list->next->data;
+    list->next->data = temp_data;
 }
 
-t_list *mx_sort_list(t_list *lst, bool (*cmp)(void *, void *)) {
-    if (lst)
-    {
-        for (t_list *temp1 = lst; temp1; temp1 = temp1->next)
-        {
-            for (t_list *temp2 = lst; temp2->next; temp2 = temp2->next)
-            {
-                if (cmp(temp2->data, temp2->next->data))
-                {
-                    swap(&temp2->data, &temp2->next->data);  
-                }
+t_list *mx_sort_list(t_list *lst, bool(*cmp)(void *, void *), bool isReversed) {
+    if (lst == NULL || cmp == NULL)
+        return lst;
+
+    bool sort_flag = false;
+    while (!sort_flag) {
+        sort_flag = true;
+        for (t_list *i = lst; i->next != NULL; i = i->next) {
+            bool cmp_result = cmp(i->data, i->next->data);
+            if ((cmp_result && !isReversed) || (!cmp_result && isReversed)) {
+                swap_data(i);
+                sort_flag = false;
             }
         }
     }

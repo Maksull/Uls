@@ -2,9 +2,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <fcntl.h>
+#include <malloc/malloc.h>
 
+//Custom pack
 int mx_strncmp(const char *s1, const char *s2, int n);
 bool mx_isspace(char c);
+char *mx_lltoa(long long number); 
+void mx_printerr(const char *s);
+bool mx_isdigit(int c);
+char *mx_strchr(const char *s, int c);
+char *mx_delim_strjoin(const char *str1, const char *str2, char delim);
+
 
 //Utils pack
 void mx_printchar(char c);
@@ -64,11 +72,13 @@ typedef struct s_list{
     void *data;
     struct s_list *next;
 }       t_list;
+
+void mx_clear_list(t_list **list);
 t_list *mx_create_node(void *data);
 void mx_push_front(t_list **list, void *data);
-// void mx_push_back(t_list **list, void *data);
+void mx_push_back(t_list **list, void *data);
 void mx_pop_front(t_list **head);
 void mx_pop_back(t_list **head);
-// int mx_list_size(t_list *list);
-// t_list *mx_sort_list(t_list *lst, bool(*cmp)(void*, void*));
+int mx_list_size(t_list *list);
+t_list *mx_sort_list(t_list *lst, bool(*cmp)(void *, void *), bool isReversed);
 
