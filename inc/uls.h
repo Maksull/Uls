@@ -70,10 +70,10 @@ typedef struct s_check_struct {
 
 static char *FLAGS = "ACGRSTcfglmortux1";
 
-// flags
+// Flags
 t_flag *mx_get_flags_applied(char *argv[], int *i);
 
-// dirs, files etc
+// Processng dirs and files
 void mx_process_dir(t_object ***name_arr, t_flag *flag);
 int mx_get_max_length_name(t_object **name_arr);
 t_object **mx_get_name_arr(int argc, char **argv, int i);
@@ -83,7 +83,7 @@ void mx_free_files(t_object ***data, t_flag *flag);
 void mx_free_entities(t_object ***data, t_object **dirs);
 void mx_free_arr(t_object ***data);
 
-// Output
+// Output functions
 void mx_output_selector(t_object ***name_arr, t_flag *flag, int flag_num);
 void mx_output_l(t_object **name_arr, t_flag *flag, int flag_num);
 void mx_output_c(t_object **name_arr);
@@ -99,12 +99,12 @@ void mx_print_all(t_object *obj, t_obj_info *size, t_flag *flag);
 void mx_printstr_G(t_object *data);
 void mx_print_tab(int length, int max_length);
 
-// error handling
+// Error handling
 void mx_printerr(const char *s);
 void mx_print_invalid_dir(t_object ***error, t_flag *flag);
 void mx_print_wrong_usage(char flag);
 
-// utils
+// Util functions
 void mx_join(char **res, char *s2);
 bool mx_is_alpha(char c);
 bool mx_str_contains(char *str, char c);
