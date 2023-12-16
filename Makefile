@@ -14,7 +14,6 @@ ULS = uls
 MKDIR = mkdir -p
 RM = rm -rf
 
-
 # Globbing patterns for source and object files
 SOURCE_FILES = $(wildcard $(SOURCE_DIR)/*.c)
 OBJECT_FILES = $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(SOURCE_FILES))

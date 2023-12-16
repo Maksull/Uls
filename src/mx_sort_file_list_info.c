@@ -1,14 +1,10 @@
 #include "../inc/uls.h"
 
-// Function to compare two strings for generic sorting
-static bool compare_strings(void *first_data, void *second_data) {
-    return mx_strcmp(first_data, second_data) > 0; // Compare strings lexically
-}
-
 // Function to compare two file names for sorting by name
 static bool compare_by_name(void *first_data, void *second_data) {
     t_file_info *file_info1 = first_data;
     t_file_info *file_info2 = second_data;
+    
     return mx_strcmp(file_info1->name, file_info2->name) > 0; // Compare file names lexically
 }
 
@@ -16,9 +12,13 @@ static bool compare_by_name(void *first_data, void *second_data) {
 static bool compare_by_size(void *first_data, void *second_data) {
     t_file_info *file_info1 = first_data;
     t_file_info *file_info2 = second_data;
+
     // Compare files by size and, if equal, by their names lexically
     if (file_info1->stat.st_size == file_info2->stat.st_size)
+    {
         return mx_strcmp(file_info1->name, file_info2->name) > 0;
+    }
+        
     return file_info1->stat.st_size < file_info2->stat.st_size; // Compare file sizes
 }
 
@@ -26,19 +26,18 @@ static bool compare_by_size(void *first_data, void *second_data) {
 static bool compare_by_time(void *first_data, void *second_data) {
     t_file_info *file_info1 = first_data;
     t_file_info *file_info2 = second_data;
+
     // Compare files by time and, if equal, by their names lexically
     if (file_info1->timespec.tv_sec == file_info2->timespec.tv_sec) {
         if (file_info1->timespec.tv_nsec == file_info2->timespec.tv_nsec)
+        {
             return mx_strcmp(file_info1->name, file_info2->name) > 0;
+        }
+            
         return file_info1->timespec.tv_nsec < file_info2->timespec.tv_nsec; // Compare file nanoseconds
     }
-    return file_info1->timespec.tv_sec < file_info2->timespec.tv_sec; // Compare file seconds
-}
 
-// Function to sort a list of filenames
-void mx_sort_filenames(t_list *filenames, t_sort_type sort_type) {
-    if (sort_type != UNSORTED)
-        mx_sort_list(filenames, compare_strings, false); // Sort list of filenames
+    return file_info1->timespec.tv_sec < file_info2->timespec.tv_sec; // Compare file seconds
 }
 
 // Function to sort a list of file information based on the specified sorting type

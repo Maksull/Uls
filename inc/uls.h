@@ -72,6 +72,13 @@ typedef struct s_configuration {
 
 // Struct for file details
 
+typedef struct s_width {
+    int links;
+    int user;
+    int group;
+    int size;
+} t_width; // Struct for storing width information for formatting
+
 typedef struct s_file_info {
     char *path;
     char *name;
@@ -84,38 +91,37 @@ typedef struct s_file_info {
     struct timespec timespec;
 } t_file_info; // Struct for storing file information
 
-typedef struct s_width {
-    int links;
-    int user;
-    int group;
-    int size;
-} t_width; // Struct for storing width information for formatting
-
-//Input configuration
+//Configuration and parting
 t_configuration *mx_parse_configuration(int argc, char *argv[]);
 
-//File handling 
+// File operations
 t_file_info *mx_get_file_info(const char *dir, const char *name, t_configuration *configuration);
 void mx_free_file_info(t_file_info *file_info);
 void mx_free_file_list_info(t_list *files_info);
+void mx_print_files_info(t_list *files_info, t_configuration *configuration);
+void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_configuration *configuration);
+int mx_print_file_info(t_file_info *files_info, t_configuration *configuration);
 
-//Directory handling 
+// Utils
+bool mx_is_ignored(const char *name, t_ignore_type ignore_type);
+blkcnt_t mx_calculate_count_blocks(t_list *files);
+
+// Directory operations
 bool mx_sort_print_dirs(t_list *dirs, t_configuration *configuration, bool must_print_names);
 bool mx_sort_print_dir(t_file_info *file_info, t_configuration *configuration, bool must_print_name);
-blkcnt_t mx_calculate_count_blocks(t_list *files);
 bool mx_get_dir_entries(t_list **entries, const char *name, t_configuration *configuration);
-bool mx_is_ignored(const char *name, t_ignore_type ignore_type);
 
-//Sorting
+// Sorting
 void mx_sort_filenames(t_list *filenames, t_sort_type sort_type);
 void mx_sort_file_list_info(t_list *files_info, t_sort_type sort_type, bool isReversed);
 
-//Printing
-int mx_print_file_info(t_file_info *files_info, t_configuration *configuration);
+// Printing
 void mx_print_one_column(t_list *files_info, t_configuration *configuration);
 void mx_print_multi_column(t_list *files_info, t_configuration *configuration);
 void mx_print_with_info(t_list *files_info, t_configuration *configuration);
 void mx_print_stream(t_list *files_info, t_configuration *configuration);
-void mx_print_files_info(t_list *files_info, t_configuration *configuration);
+void mx_print_aligned(char *str, int width, bool align_right);
+void mx_print_number_aligned(long long number, int width);
+void mx_print_size(off_t size, int width);
 
 #endif
