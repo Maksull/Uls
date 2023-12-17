@@ -6,11 +6,13 @@ static double round_size(double number) {
     return (long)(number + 0.5);
 }
 
+// Function to determine the appropriate measurement unit for the size
 static int determine_measurement_unit(off_t size) {
     const char *measurement_units[] = {"B", "K", "M", "G", "T", "P"};
     double file_size = size;
     int unit_index = 0;
 
+    // Determine the appropriate measurement unit based on the size
     while (file_size >= 1000) {
         file_size /= 1024;
         unit_index++;
@@ -19,12 +21,15 @@ static int determine_measurement_unit(off_t size) {
     return unit_index;
 }
 
+// Function to format the size value for display
 static void format_size_value(double rounded_size, int unit_index, char *buf) {
     if (rounded_size >= 10 || unit_index == 0) {
+        // If the rounded size is larger than 10 or the unit is in bytes, format as a whole number
         char *str = mx_lltoa(round_size(file_size));
         mx_strcat(buf, str);
         free(str);
     } else {
+        // If the rounded size is less than 10, format with a decimal place
         char *str = mx_lltoa(rounded_size);
         mx_strcat(buf, str);
         free(str);

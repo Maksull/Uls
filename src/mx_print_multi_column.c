@@ -6,11 +6,9 @@ static int calculate_max_width(t_list *files_info) {
     while (files_info) {
         t_file_info *file_info = files_info->data;
         int length = mx_strlen(file_info->name);
-        if (max_width < length)
-        {
+        if (max_width < length) {
             max_width = length;
         }
-            
         files_info = files_info->next;
     }
 
@@ -20,8 +18,7 @@ static int calculate_max_width(t_list *files_info) {
 // Function to convert a list of file_info structures into an array of file_info pointers
 static t_file_info **list_to_file_info_array(t_list *files_info, int *file_number) {
     *file_number = mx_list_size(files_info);
-    if (*file_number == 0)
-    {
+    if (*file_number == 0) {
         return NULL;
     }
 
@@ -35,6 +32,7 @@ static t_file_info **list_to_file_info_array(t_list *files_info, int *file_numbe
     return file_info_array; // Return the array of file_info pointers
 }
 
+// Function to calculate width and tabulation for displaying files
 static int calculate_width_and_tabulation(t_list *files_info, t_configuration *configuration) {
     int tabwidth = 8; // Default tab width
     if (configuration->use_colors) {
@@ -51,6 +49,7 @@ static int calculate_width_and_tabulation(t_list *files_info, t_configuration *c
     return width;
 }
 
+// Function to determine terminal width
 static int determine_terminal_width() {
     int terminal_width = 80; // Default terminal width
     if (isatty(1)) {
@@ -63,6 +62,7 @@ static int determine_terminal_width() {
     return terminal_width;
 }
 
+// Function to print files in columns
 static void print_files_in_columns(t_file_info **array, int file_number, int row_number, int column_number, int width, t_configuration *configuration) {
     int index = 0;
     for (int i = 0; i < row_number; i++) {
@@ -79,7 +79,7 @@ static void print_files_in_columns(t_file_info **array, int file_number, int row
             if (index >= file_number) {
                 break;
             }
-            int tabs = (width - printed + configuration->tabwidth - 1) / configuration->tabwidth; // Calculate the number of tabs for alignment
+            int tabs = (width - printed + configuration->tabwidth - 1) / configuration->tabwidth; // Calculate tabs for alignment
             for (int i = 0; i < tabs; i++) {
                 if (configuration->tabwidth == 1) {
                     mx_printchar(' ');
@@ -88,10 +88,12 @@ static void print_files_in_columns(t_file_info **array, int file_number, int row
                 }
             }
         }
+
         mx_printchar('\n'); // Print a new line after each row
     }
 }
 
+// Function to convert list of files_info to an array of file_info pointers
 static t_file_info **convert_list_to_array(t_list *files_info, int *file_number) {
     return list_to_file_info_array(files_info, file_number); // Assuming this function exists elsewhere
 }
@@ -105,6 +107,7 @@ void mx_print_multi_column(t_list *files_info, t_configuration *configuration) {
     int column_number = terminal_width / width; // Calculate the number of columns
     if (column_number <= 1) {
         mx_print_one_column(files_info, configuration); // If only one column can fit, print in single column format
+        
         return;
     }
 
