@@ -149,7 +149,7 @@ static void print_acl(acl_t acl) {
     char **lines = mx_strsplit(acl_str, '\n');
 
     // Iterate through ACL lines and print each entry
-    for (int i = 1; lines[i] != NULL; i++) {
+    for (int i = 1; lines[i]; i++) {
         mx_printchar(' ');
         mx_printint(i - 1);
         mx_printstr(": ");
@@ -183,11 +183,11 @@ void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_confi
     print_permissions(file_info->stat.st_mode);
 
     // Determine if extended attributes or ACLs are present and print corresponding markers
-    if (file_info->xattr_keys != NULL)
+    if (file_info->xattr_keys)
     {
         mx_printchar('@');
     }
-    else if (file_info->acl != NULL)
+    else if (file_info->acl)
     {
         mx_printchar('+');
     }
@@ -247,20 +247,20 @@ void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_confi
 
     // Print file/directory name and additional information if it's a symbolic link
     mx_print_file_info(file_info, configuration);
-    if (file_info->link != NULL) {
+    if (file_info->link) {
         mx_printstr(" -> ");
         mx_printstr(file_info->link);
     }
     mx_printchar('\n');
 
     // Print extended attributes if enabled in configuration and present for the file
-    if (configuration->extended_attributes && file_info->xattr_keys != NULL)
+    if (configuration->extended_attributes && file_info->xattr_keys)
     {
         print_xattrs(file_info, configuration->display_human_readable_size);
     }
 
     // Print ACL if enabled in configuration and present for the file
-    if (configuration->acl && file_info->acl != NULL)
+    if (configuration->acl && file_info->acl)
     {
         print_acl(file_info->acl);
     }

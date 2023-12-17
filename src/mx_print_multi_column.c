@@ -3,7 +3,7 @@
 // Function to calculate the maximum width among file names in the list
 static int calculate_max_width(t_list *files_info) {
     int max_width = 0;
-    while (files_info != NULL) {
+    while (files_info) {
         t_file_info *file_info = files_info->data;
         int length = mx_strlen(file_info->name);
         if (max_width < length)
@@ -99,7 +99,9 @@ void mx_print_multi_column(t_list *files_info, t_configuration *configuration) {
     int tabwidth = (configuration->use_colors) ? 1 : 8;
     int width = calculate_max_width(files_info);
     if (configuration->classify || configuration->add_only_slash_to_directories)
+    {
         width++;
+    }
     width = (width + tabwidth) & ~(tabwidth - 1);
 
     int terminal_width = calculate_terminal_width();

@@ -11,7 +11,7 @@ bool mx_get_dir_entries(t_list **entries, const char *name, t_configuration *con
     struct dirent *entry = NULL;
 
     // Iterate through directory entries and collect file information
-    while ((entry = readdir(dir)) != NULL)
+    while (entry = readdir(dir))
     {
         if (!mx_is_ignored(entry->d_name, configuration->ignore_type))
         {
