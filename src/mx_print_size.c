@@ -13,7 +13,7 @@ static int determine_unit_index(double file_size) {
     return unit_index;
 }
 
-static void format_size_string(double rounded_size, int unit_index, char *buf) {
+static void format_size_string(double rounded_size, int unit_index, char *buf, double file_size) {
     if (rounded_size >= 10 || unit_index == 0) {
         char *str = mx_lltoa(round_size(file_size));
         mx_strcat(buf, str);
@@ -44,7 +44,7 @@ void mx_print_size(off_t size, int width) {
     double rounded_size = round_size(file_size * 10) / 10;
 
     char buf[5] = {'\0'};
-    format_size_string(rounded_size, unit_index, buf);
+    format_size_string(rounded_size, unit_index, buf, file_size);
     append_measurement_unit(unit_index, buf);
     print_aligned_size(buf, width);
 }
