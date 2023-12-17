@@ -176,16 +176,6 @@ static void print_acl(acl_t acl) {
     free(acl_str);
 }
 
-// Function to initialize width structure
-static t_width initialize_width() {
-    t_width width;
-    width.links = 0;
-    width.user = 0;
-    width.group = 0;
-    width.size = 0;
-    return width;
-}
-
 // Function to print detailed information for multiple files
 void mx_print_with_info(t_list *files_info, t_configuration *configuration) {
     // Calculate the maximum width of various fields for formatting

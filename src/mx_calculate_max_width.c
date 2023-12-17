@@ -1,5 +1,15 @@
 #include "../inc/uls.h"
 
+// Function to initialize width structure
+static t_width initialize_width() {
+    t_width width;
+    width.links = 0;
+    width.user = 0;
+    width.group = 0;
+    width.size = 0;
+    return width;
+}
+
 // Function to calculate the maximum width of various information fields for formatting
 t_width mx_calculate_max_width(t_list *files_info, t_configuration *configuration) {
     t_width width = initialize_width();
