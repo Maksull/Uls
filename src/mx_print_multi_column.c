@@ -7,9 +7,13 @@ static int calculate_max_width(t_list *files_info) {
         t_file_info *file_info = files_info->data;
         int length = mx_strlen(file_info->name);
         if (max_width < length)
+        {
             max_width = length;
+        }
+            
         files_info = files_info->next;
     }
+
     return max_width; // Return the maximum width among file names
 }
 
@@ -17,7 +21,9 @@ static int calculate_max_width(t_list *files_info) {
 static t_file_info **list_to_file_info_array(t_list *files_info, int *file_number) {
     *file_number = mx_list_size(files_info);
     if (*file_number == 0)
+    {
         return NULL;
+    }
 
     // Allocate memory for an array of file_info pointers and populate the array
     t_file_info **file_info_array = malloc(sizeof(t_file_info *) * (*file_number));
@@ -26,61 +32,92 @@ static t_file_info **list_to_file_info_array(t_list *files_info, int *file_numbe
         files_info = files_info->next;
     }
 
-    return file_info_array; // Return the array of file_info pointers
+    return file_info_array;
 }
 
-// Function to print files in a multi-column format
-void mx_print_multi_column(t_list *files_info, t_configuration *configuration) {
-    int tabwidth = 8; // Default tab width
-    if (configuration->use_colors)
-        tabwidth = 1; // Set tab width to 1 if colors are used
-
-    // Calculate the maximum width of file names and adjust for tabbing
-    int width = calculate_max_width(files_info);
-    if (configuration->classify || configuration->add_only_slash_to_directories)
-        width++;
-    width = (width + tabwidth) & ~(tabwidth - 1); // Ensure width is a multiple of tabwidth
-
-    int terminal_width = 80; // Default terminal width
+static int calculate_terminal_width() {
+    int terminal_width = 80;
     if (isatty(1)) {
-        // Retrieve terminal width if outputting to a terminal
         struct winsize w;
         ioctl(0, TIOCGWINSZ, &w);
         terminal_width = w.ws_col;
     }
+    return terminal_width;
+}
 
-    int column_number = terminal_width / width; // Calculate the number of columns
-    if (column_number <= 1) {
-        mx_print_one_column(files_info, configuration); // If only one column can fit, print in single column format
-        return;
+static int calculate_column_number(int width, int terminal_width) {
+    int column_number = terminal_width / width;
+    return (column_number <= 1) ? 1 : column_number;
+}
+
+static int calculate_row_number(int file_number, int column_number) {
+    return (file_number + column_number - 1) / column_number;
+}
+
+static void print_file_info_with_tabs(t_file_info *file_info, int width, int tabwidth, t_configuration *configuration) {
+    int printed = mx_print_file_info(file_info, configuration);
+    int tabs = (width - printed + tabwidth - 1) / tabwidth;
+    for (int i = 0; i < tabs; i++) {
+        if (tabwidth == 1)
+        {
+            mx_printchar(' ');
+        }
+        else
+        {
+            mx_printchar('\t');
+        }
+            
     }
+}
 
-    int file_number;
-    t_file_info **array = list_to_file_info_array(files_info, &file_number); // Convert list to an array
-    int row_number = (file_number + column_number - 1) / column_number; // Calculate the number of rows
-
+static void print_multi_column_rows(t_file_info **array, int row_number, int column_number, int width, int tabwidth, int file_number, t_configuration *configuration) {
     int index = 0;
     for (int i = 0; i < row_number; i++) {
         if (!configuration->sort_horizontally)
-            index = i; // Adjust index for horizontal sorting
+            index = i;
         for (int j = 0; j < column_number; j++) {
-            int printed = mx_print_file_info(array[index], configuration); // Print file information
+            print_file_info_with_tabs(array[index], width, tabwidth, configuration);
             if (configuration->sort_horizontally)
+            {
                 index++;
+            }
             else
+            {
                 index += row_number;
+            }
             if (index >= file_number)
+            {
                 break;
-            int tabs = (width - printed + tabwidth - 1) / tabwidth; // Calculate the number of tabs for alignment
-            for (int i = 0; i < tabs; i++) {
-                if (tabwidth == 1)
-                    mx_printchar(' ');
-                else
-                    mx_printchar('\t');
             }
         }
-        mx_printchar('\n'); // Print a new line after each row
+        mx_printchar('\n');
     }
-    if (array != NULL)
-        free(array); // Free allocated memory for the array
+}
+
+// Function to print files in a multi-column format
+void mx_print_multi_column(t_list *files_info, t_configuration *configuration) {
+    int tabwidth = (configuration->use_colors) ? 1 : 8;
+    int width = calculate_max_width(files_info);
+    if (configuration->classify || configuration->add_only_slash_to_directories)
+        width++;
+    width = (width + tabwidth) & ~(tabwidth - 1);
+
+    int terminal_width = calculate_terminal_width();
+    int file_number;
+    t_file_info **array = list_to_file_info_array(files_info, &file_number);
+    int column_number = calculate_column_number(width, terminal_width);
+
+    if (column_number <= 1) {
+        mx_print_one_column(files_info, configuration);
+        return;
+    }
+
+    int row_number = calculate_row_number(file_number, column_number);
+
+    print_multi_column_rows(array, row_number, column_number, width, tabwidth, file_number, configuration);
+
+    if (array)
+    {
+        free(array);
+    }
 }

@@ -89,11 +89,15 @@ static char *replace_non_printable_characters(const char *name) {
     return temp;
 }
 
-// Function to print file information (name, colors, classifiers) based on configuration settings
-int mx_print_file_info(t_file_info *file_info, t_configuration *configuration) {
-    if (configuration->use_colors)
-        apply_color(file_info->stat.st_mode); // Apply color to file names based on their mode
+// Function to apply color to file names based on their mode
+static void apply_color_if_enabled(mode_t file_mode, bool use_colors) {
+    if (use_colors) {
+        apply_color(file_mode); // Apply color to file names based on their mode
+    }
+}
 
+// Function to handle printing file names with or without replacing non-printable characters
+static void print_file_name(t_file_info *file_info, t_configuration *configuration) {
     if (configuration->display_non_printable_characters) {
         char *str = replace_non_printable_characters(file_info->name); // Replace non-printable characters in file names
         mx_printstr(str); // Print the modified file name
@@ -101,11 +105,34 @@ int mx_print_file_info(t_file_info *file_info, t_configuration *configuration) {
     } else {
         mx_printstr(file_info->name); // Print the file name
     }
+}
 
-    if (configuration->use_colors)
+// Function to reset color settings if enabled
+static void reset_color_if_enabled(bool use_colors) {
+    if (use_colors) {
         mx_printstr("\033[0m"); // Reset color settings
+    }
+}
+
+// Function to calculate the length of the file name and add classifiers if configured
+static int calculate_length_and_classifiers(t_file_info *file_info, t_configuration *configuration) {
     int length = mx_strlen(file_info->name); // Calculate the length of the file name
-    if (configuration->classify || configuration->add_only_slash_to_directories)
+    if (configuration->classify || configuration->add_only_slash_to_directories) {
         length += add_classifier(file_info->stat.st_mode, configuration->add_only_slash_to_directories); // Add classifiers to file names
+    }
+
+    return length; // Return the total length of the printed file name
+}
+
+// Function to print file information (name, colors, classifiers) based on configuration settings
+int mx_print_file_info(t_file_info *file_info, t_configuration *configuration) {
+    apply_color_if_enabled(file_info->stat.st_mode, configuration->use_colors);
+    
+    print_file_name(file_info, configuration);
+    
+    reset_color_if_enabled(configuration->use_colors);
+    
+    int length = calculate_length_and_classifiers(file_info, configuration);
+    
     return length; // Return the total length of the printed file name
 }
