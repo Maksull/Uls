@@ -1,15 +1,44 @@
 #include "../inc/uls.h"
 
+// Function to set default format based on terminal output
+static void set_default_format(t_configuration *configuration) {
+    if (isatty(1)) {
+        configuration->format = MULTI_COLUMN;
+    }
+}
+
+// Function to adjust display settings based on terminal output
+static void adjust_display_settings(t_configuration *configuration) {
+    if (isatty(1)) {
+        configuration->display_non_printable_characters = true;
+    } else {
+        configuration->use_colors = false;
+    }
+}
+
+// Function to adjust follow symbolic links based on conditions
+static void adjust_symbolic_links(t_configuration *configuration) {
+    if (!configuration->follow_symbolic_links) {
+        configuration->follow_symbolic_links = configuration->format != DETAILED &&
+                                               !configuration->use_colors &&
+                                               !configuration->classify;
+    }
+}
+
+// Function to adjust ignore type if sorting is unsorted
+static void adjust_ignore_type(t_configuration *configuration) {
+    if (configuration->sort_type == UNSORTED) {
+        configuration->ignore_type = NOT_IGNORED;
+    }
+}
+
 t_configuration *mx_parse_configuration(int argc, char *argv[]) {
     // Allocate memory for the configuration struct
     t_configuration *configuration = malloc(sizeof(t_configuration));
     mx_memset(configuration, 0, sizeof(t_configuration)); // Initialize to default values
 
-    // Check if output is a terminal, set the default format accordingly
-    if (isatty(1))
-    {
-        configuration->format = MULTI_COLUMN;
-    }
+    // Set default format based on terminal output
+    set_default_format(configuration);
 
     // Loop through command-line arguments to parse options
     for (int i = 1; i < argc; i++) {
@@ -117,27 +146,14 @@ t_configuration *mx_parse_configuration(int argc, char *argv[]) {
         }
     }
 
-    // Check if output is a terminal to adjust additional display settings
-    if (isatty(1))
-    {
-        configuration->display_non_printable_characters = true;
-    }
-    else
-    {
-        configuration->use_colors = false;
-    }
+    // Adjust display settings
+    adjust_display_settings(configuration);
 
-    // Adjust follow symbolic links if certain conditions are met
-    if (!configuration->follow_symbolic_links)
-    {
-        configuration->follow_symbolic_links = configuration->format != DETAILED && !configuration->use_colors && !configuration->classify;
-    }
+    // Adjust symbolic links
+    adjust_symbolic_links(configuration);
 
-    // Adjust ignore type if sorting is unsorted
-    if (configuration->sort_type == UNSORTED)
-    {
-        configuration->ignore_type = NOT_IGNORED;
-    }
+    // Adjust ignore type
+    adjust_ignore_type(configuration);
 
     // Return the populated configuration struct
     return configuration;
