@@ -99,7 +99,6 @@ t_file_info *mx_get_file_info(const char *dir, const char *name, t_configuration
 void mx_free_file_info(t_file_info *file_info);
 void mx_free_file_list_info(t_list *files_info);
 void mx_print_files_info(t_list *files_info, t_configuration *configuration);
-void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_configuration *configuration);
 int mx_print_file_info(t_file_info *files_info, t_configuration *configuration);
 
 // Utils
