@@ -8,7 +8,6 @@ static double round_size(double number) {
 
 // Function to determine the appropriate measurement unit for the size
 static int determine_measurement_unit(off_t size) {
-    const char *measurement_units[] = {"B", "K", "M", "G", "T", "P"};
     double file_size = size;
     int unit_index = 0;
 
@@ -22,7 +21,7 @@ static int determine_measurement_unit(off_t size) {
 }
 
 // Function to format the size value for display
-static void format_size_value(double rounded_size, int unit_index, char *buf) {
+static void format_size_value(double rounded_size, int unit_index, char *buf, double file_size) {
     if (rounded_size >= 10 || unit_index == 0) {
         // If the rounded size is larger than 10 or the unit is in bytes, format as a whole number
         char *str = mx_lltoa(round_size(file_size));
@@ -51,7 +50,7 @@ void mx_print_size(off_t size, int width) {
 
     char buf[5] = {'\0'};
 
-    format_size_value(rounded_size, unit_index, buf);
+    format_size_value(rounded_size, unit_index, buf, file_size);
 
     mx_strcat(buf, measurement_units[unit_index]);
 

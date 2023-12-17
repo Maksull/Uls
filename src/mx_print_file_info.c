@@ -1,5 +1,6 @@
 #include "../inc/uls.h"
 
+
 // Function to apply color to file names based on their mode
 static void apply_color(mode_t mode) {
     switch (mode & S_IFMT) {
@@ -42,7 +43,6 @@ static void apply_color(mode_t mode) {
                     mx_printstr("\033[31m");  // Red text (Executable file)
                 }
             }
-            
             break;
     }
 }
@@ -66,25 +66,17 @@ static int add_classifier(mode_t mode, bool slash_only) {
             break;
         case S_IFREG:
             if (mode & (S_IXUSR | S_IXGRP | S_IXOTH))
-            {
                 classifier = '*';  // Executable file
-            }
-                
             break;
     }
 
     // Adding the classifier to the file name if applicable
     if (classifier != '\0') {
         if (slash_only && classifier != '/')
-        {
             return 0;
-        }
-            
         mx_printchar(classifier);
-
         return 1;
     }
-
     return 0;
 }
 
@@ -92,59 +84,28 @@ static int add_classifier(mode_t mode, bool slash_only) {
 static char *replace_non_printable_characters(const char *name) {
     char *temp = mx_strdup(name);
     for (int i = 0; temp[i] != '\0'; i++)
-    {
         if (temp[i] >= 0 && temp[i] <= 31)
-        {
             temp[i] = '?';
-        }
-    }
-        
     return temp;
-}
-
-// Function to apply colors
-static void apply_colors(t_configuration *configuration, mode_t st_mode) {
-    if (configuration->use_colors) {
-        apply_color(st_mode);
-    }
-}
-
-// Function to handle non-printable characters
-static void handle_non_printable_characters(t_file_info *file_info, t_configuration *configuration) {
-    if (configuration->display_non_printable_characters) {
-        char *str = replace_non_printable_characters(file_info->name);
-        mx_printstr(str);
-        free(str);
-    } else {
-        mx_printstr(file_info->name);
-    }
-}
-
-// Function to reset color settings
-static void reset_color_settings(t_configuration *configuration) {
-    if (configuration->use_colors) {
-        mx_printstr("\033[0m");
-    }
-}
-
-// Function to calculate length and add classifiers
-static int calculate_length_and_add_classifiers(t_file_info *file_info, t_configuration *configuration) {
-    int length = mx_strlen(file_info->name);
-    
-    if (configuration->classify || configuration->add_only_slash_to_directories) {
-        length += add_classifier(file_info->stat.st_mode, configuration->add_only_slash_to_directories);
-    }
-    
-    return length;
 }
 
 // Function to print file information (name, colors, classifiers) based on configuration settings
 int mx_print_file_info(t_file_info *file_info, t_configuration *configuration) {
-    apply_colors(configuration, file_info->stat.st_mode);
+    if (configuration->use_colors)
+        apply_color(file_info->stat.st_mode); // Apply color to file names based on their mode
 
-    handle_non_printable_characters(file_info, configuration);
+    if (configuration->display_non_printable_characters) {
+        char *str = replace_non_printable_characters(file_info->name); // Replace non-printable characters in file names
+        mx_printstr(str); // Print the modified file name
+        free(str);
+    } else {
+        mx_printstr(file_info->name); // Print the file name
+    }
 
-    reset_color_settings(configuration);
-
-    return calculate_length_and_add_classifiers(file_info, configuration);
+    if (configuration->use_colors)
+        mx_printstr("\033[0m"); // Reset color settings
+    int length = mx_strlen(file_info->name); // Calculate the length of the file name
+    if (configuration->classify || configuration->add_only_slash_to_directories)
+        length += add_classifier(file_info->stat.st_mode, configuration->add_only_slash_to_directories); // Add classifiers to file names
+    return length; // Return the total length of the printed file name
 }

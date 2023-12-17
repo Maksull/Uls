@@ -1,16 +1,19 @@
 #include "../inc/uls.h"
 
-// Function to sort a list of file information based on the specified sorting type
-void mx_sort_file_list_info(t_list *files_info, t_sort_type sort_type, bool isReversed) {
-    switch (sort_type) {
-        case BY_NAME:
-            mx_sort_list(files_info, compare_by_name, isReversed); // Sort list by name
+// Function to determine the printing format and call the corresponding printing function
+void mx_print_files_info(t_list *files_info, t_configuration *configuration) {
+    switch (configuration->format) {
+        case ONE_COLUMN:
+            mx_print_one_column(files_info, configuration); // Print files in a single column
             break;
-        case BY_SIZE:
-            mx_sort_list(files_info, compare_by_size, isReversed); // Sort list by size
+        case MULTI_COLUMN:
+            mx_print_multi_column(files_info, configuration); // Print files in multiple columns
             break;
-        case BY_TIME:
-            mx_sort_list(files_info, compare_by_time, isReversed); // Sort list by time
+        case STREAM:
+            mx_print_stream(files_info, configuration); // Print files in a stream
+            break;
+        case DETAILED:
+            mx_print_with_info(files_info, configuration); // Print detailed information for files
             break;
         default:
             break;
