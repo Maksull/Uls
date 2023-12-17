@@ -1,6 +1,5 @@
 #include "../inc/uls.h"
 
-
 // Function to apply color to file names based on their mode
 static void apply_color(mode_t mode) {
     switch (mode & S_IFMT) {
@@ -133,6 +132,6 @@ int mx_print_file_info(t_file_info *file_info, t_configuration *configuration) {
     reset_color_if_enabled(configuration->use_colors);
     
     int length = calculate_length_and_classifiers(file_info, configuration);
-    
+
     return length; // Return the total length of the printed file name
 }

@@ -104,6 +104,7 @@ int mx_print_file_info(t_file_info *files_info, t_configuration *configuration);
 // Utils
 bool mx_is_ignored(const char *name, t_ignore_type ignore_type);
 blkcnt_t mx_calculate_count_blocks(t_list *files);
+t_width mx_calculate_max_width(t_list *files_info, t_configuration *configuration);
 
 // Directory operations
 bool mx_sort_print_dirs(t_list *dirs, t_configuration *configuration, bool must_print_names);
@@ -122,5 +123,6 @@ void mx_print_stream(t_list *files_info, t_configuration *configuration);
 void mx_print_aligned(char *str, int width, bool align_right);
 void mx_print_number_aligned(long long number, int width);
 void mx_print_size(off_t size, int width);
+void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_configuration *configuration);
 
 #endif
