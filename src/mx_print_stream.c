@@ -2,9 +2,9 @@
 
 // Function to print file information in a stream format
 void mx_print_stream(t_list *files_info, t_configuration *configuration) {
-    while (files_info != NULL) {
+    while (files_info) {
         mx_print_file_info(files_info->data, configuration); // Print file information
-        if (files_info->next != NULL)
+        if (files_info->next)
         {
             mx_printstr(", "); // Print a comma and space if there are more files to be printed
         }

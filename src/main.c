@@ -4,12 +4,12 @@ static t_list *collect_files_and_dirs(int argc, char *argv[]) {
     t_list *given_files_and_dirs = NULL;
 
     for (int i = 1; i < argc; i++) {
-        if (argv[i][0] != '-' || given_files_and_dirs != NULL) {
+        if (argv[i][0] != '-' || given_files_and_dirs) {
             mx_push_back(&given_files_and_dirs, argv[i]);
         }
     }
     
-    if (given_files_and_dirs == NULL) {
+    if (!given_files_and_dirs) {
         mx_push_back(&given_files_and_dirs, ".");
     }
 
@@ -17,13 +17,13 @@ static t_list *collect_files_and_dirs(int argc, char *argv[]) {
 }
 
 static void process_file_info(t_list *given_files_and_dirs, t_list **files, t_list **dirs, t_configuration *configuration, int *result_status) {
-    while (given_files_and_dirs != NULL) {
+    while (given_files_and_dirs) {
         char *file_or_dir = given_files_and_dirs->data;
         given_files_and_dirs = given_files_and_dirs->next;
 
         t_file_info *file_info = mx_get_file_info(NULL, file_or_dir, configuration);
 
-        if (file_info == NULL) {
+        if (!file_info) {
             mx_printerr("uls: ");
             mx_printerr(file_or_dir);
             mx_printerr(": ");
@@ -43,12 +43,12 @@ static void process_file_info(t_list *given_files_and_dirs, t_list **files, t_li
 
 
 static void print_file_info(t_list *files, t_list *dirs, t_configuration *configuration, bool must_print_names, int *result_status) {
-    if (files != NULL) {
+    if (files) {
         mx_sort_file_list_info(files, configuration->sort_type, configuration->sort_reverse);
         mx_print_files_info(files, configuration);
     }
 
-    if (files != NULL && dirs != NULL) {
+    if (files && dirs) {
         mx_printchar('\n');
     }
 

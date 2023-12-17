@@ -6,7 +6,7 @@ static char *get_user(uid_t uid, bool numeric_ID) {
     struct passwd *passwd = getpwuid(uid);
 
     // Check if user info is not found or numeric ID is requested
-    if (passwd == NULL || numeric_ID)
+    if (!passwd || numeric_ID)
     {
         return mx_lltoa(uid); // Return UID as a string
     }
@@ -20,7 +20,7 @@ static char *get_group(gid_t gid, bool numeric_ID) {
     struct group *group = getgrgid(gid);
     
     // Check if group info is not found or numeric ID is requested
-    if (group == NULL || numeric_ID)
+    if (!group || numeric_ID)
     {
         return mx_lltoa(gid); // Return GID as a string
     }
@@ -60,7 +60,7 @@ static t_file_info *initialize_file_info(const char *dir, const char *name) {
 static int obtain_file_stat(t_file_info *file_info, const char *path, t_configuration *configuration) {
     int processing_status;
 
-    if (path == NULL && configuration->follow_symbolic_links) {
+    if (!path && configuration->follow_symbolic_links) {
         processing_status = stat(file_info->path, &file_info->stat);
     } else {
         processing_status = lstat(file_info->path, &file_info->stat);

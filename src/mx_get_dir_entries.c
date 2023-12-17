@@ -3,7 +3,7 @@
 // Function to obtain directory entries and store file_info structures in a list
 bool mx_get_dir_entries(t_list **entries, const char *name, t_configuration *configuration) {
     DIR *dir = opendir(name);
-    if (dir == NULL)
+    if (!dir)
     {
         return false; // Return false if directory cannot be opened
     }

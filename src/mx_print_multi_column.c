@@ -3,7 +3,7 @@
 // Function to calculate the maximum width among file names in the list
 static int calculate_max_width(t_list *files_info) {
     int max_width = 0;
-    while (files_info != NULL) {
+    while (files_info) {
         t_file_info *file_info = files_info->data;
         int length = mx_strlen(file_info->name);
         if (max_width < length)
@@ -114,7 +114,7 @@ void mx_print_multi_column(t_list *files_info, t_configuration *configuration) {
 
     print_files_in_columns(array, file_number, row_number, column_number, width, configuration);
 
-    if (array != NULL) {
+    if (array) {
         free(array); // Free allocated memory for the array
     }
 }

@@ -86,9 +86,9 @@ static void print_date_and_time(time_t ptime, bool full_time_info) {
     array[4][4] = '\0';
     if (full_time_info) {
         // Print full time information
-        for (int i = 1; array[i] != NULL; i++) {
+        for (int i = 1; array[i]; i++) {
             mx_print_aligned(array[i], 2, true);
-            if (array[i + 1] != NULL)
+            if (array[i + 1])
             {
                 mx_printchar(' ');
             }
@@ -120,7 +120,7 @@ static void print_date_and_time(time_t ptime, bool full_time_info) {
 // Function to print extended attributes of a file
 static void print_xattrs(t_file_info *file_info, bool human_readable) {
     // Loop through the extended attribute keys and print their values
-    for (char **ptr = file_info->xattr_keys; *ptr != NULL; ptr++) {
+    for (char **ptr = file_info->xattr_keys; *ptr; ptr++) {
         mx_printchar('\t');
         mx_printstr(*ptr);
         mx_printchar('\t');
@@ -151,7 +151,7 @@ static void print_acl(acl_t acl) {
     char **lines = mx_strsplit(acl_str, '\n');
 
     // Iterate through ACL lines and print each entry
-    for (int i = 1; lines[i] != NULL; i++) {
+    for (int i = 1; lines[i]; i++) {
         mx_printchar(' ');
         mx_printint(i - 1);
         mx_printstr(": ");
@@ -186,9 +186,9 @@ static void print_file_type_and_permissions(mode_t st_mode) {
 
 // Function to print extended attributes or ACL markers
 static void print_extended_acl_markers(t_file_info *file_info) {
-    if (file_info->xattr_keys != NULL) {
+    if (file_info->xattr_keys) {
         mx_printchar('@');
-    } else if (file_info->acl != NULL) {
+    } else if (file_info->acl) {
         mx_printchar('+');
     } else {
         mx_printchar(' ');
@@ -258,7 +258,7 @@ static void print_date_and_time_info(time_t tv_sec, bool full_time_info) {
 static void print_file_and_symbolic_link_info(t_file_info *file_info, t_configuration *configuration) {
     mx_print_file_info(file_info, configuration);
 
-    if (file_info->link != NULL) {
+    if (file_info->link) {
         mx_printstr(" -> ");
         mx_printstr(file_info->link);
     }
@@ -267,14 +267,14 @@ static void print_file_and_symbolic_link_info(t_file_info *file_info, t_configur
 
 // Function to print extended attributes if enabled in configuration
 static void print_extended_attributes_if_enabled(t_file_info *file_info, t_configuration *configuration) {
-    if (configuration->extended_attributes && file_info->xattr_keys != NULL) {
+    if (configuration->extended_attributes && file_info->xattr_keys) {
         print_xattrs(file_info, configuration->display_human_readable_size);
     }
 }
 
 // Function to print ACL if enabled in configuration
 static void print_acl_if_enabled(t_file_info *file_info, t_configuration *configuration) {
-    if (configuration->acl && file_info->acl != NULL) {
+    if (configuration->acl && file_info->acl) {
         print_acl(file_info->acl);
     }
 }

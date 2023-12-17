@@ -5,7 +5,7 @@ void mx_free_file_list_info(t_list *files_info) {
     t_list *temp = files_info;
 
     // Iterate through the list and free each file_info structure
-    while (temp != NULL) {
+    while (temp) {
         t_file_info *file_info = temp->data;
         mx_free_file_info(file_info);
         temp = temp->next;

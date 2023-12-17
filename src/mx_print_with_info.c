@@ -47,7 +47,7 @@ static t_width initialize_width() {
 static t_width calculate_max_width(t_list *files_info, t_configuration *configuration) {
     t_width width = initialize_width();
 
-    while (files_info != NULL) {
+    while (files_info) {
         t_file_info *file_info = files_info->data;
         calculate_and_update_widths(&width, file_info, configuration);
         files_info = files_info->next;
@@ -62,7 +62,7 @@ void mx_print_with_info(t_list *files_info, t_configuration *configuration) {
     t_width max_width = calculate_max_width(files_info, configuration);
 
     // Loop through file information and print detailed information for each file
-    while (files_info != NULL) {
+    while (files_info) {
         mx_print_file_info_detailed(files_info->data, &max_width, configuration);
         files_info = files_info->next;
     }

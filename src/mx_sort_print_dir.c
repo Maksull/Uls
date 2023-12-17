@@ -10,7 +10,7 @@ static void print_directory_name(t_file_info *file_info, bool must_print_name) {
 static bool handle_directory_entries(t_list **files_info, t_file_info *file_info, t_configuration *configuration) {
     bool result_status = mx_get_dir_entries(files_info, file_info->path, configuration);
     
-    if (configuration->format == DETAILED && *files_info != NULL) {
+    if (configuration->format == DETAILED && *files_info) {
         mx_printstr("total ");
         mx_printint(mx_calculate_count_blocks(*files_info));
         mx_printchar('\n');
@@ -29,7 +29,7 @@ static bool handle_directory_entries(t_list **files_info, t_file_info *file_info
 
 static void handle_recursion(t_list *files_info, t_configuration *configuration) {
     t_list *dirs = NULL;
-    while (files_info != NULL) {
+    while (files_info) {
         t_file_info *entry = files_info->data;
         if (S_ISDIR(entry->stat.st_mode) && !mx_is_ignored(entry->name, DOTS)) {
             free(entry->name);
@@ -39,7 +39,7 @@ static void handle_recursion(t_list *files_info, t_configuration *configuration)
         files_info = files_info->next;
     }
 
-    if (dirs != NULL) {
+    if (dirs) {
         mx_printchar('\n');
     }
 
