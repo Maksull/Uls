@@ -176,32 +176,32 @@ static void print_acl(acl_t acl) {
     free(acl_str);
 }
 
-// Function to print detailed file information including permissions, sizes, etc.
-void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_configuration *configuration) {
-    // Print file type and permissions
+// Function to print file type and permissions
+static void print_file_info(t_file_info *file_info) {
     print_filetype(file_info->stat.st_mode);
     print_permissions(file_info->stat.st_mode);
+}
 
-    // Determine if extended attributes or ACLs are present and print corresponding markers
-    if (file_info->xattr_keys)
-    {
+// Function to print extended attributes or ACL markers
+static void print_extended_acl_markers(t_file_info *file_info) {
+    if (file_info->xattr_keys) {
         mx_printchar('@');
-    }
-    else if (file_info->acl)
-    {
+    } else if (file_info->acl) {
         mx_printchar('+');
-    }
-    else
-    {
+    } else {
         mx_printchar(' ');
     }
+}
 
-    // Print link count, user, group, size, date/time, and file/directory name
+// Function to print link count
+static void print_link_count(t_file_info *file_info, t_width *width) {
     mx_printchar(' ');
     mx_print_number_aligned(file_info->stat.st_nlink, width->links);
     mx_printchar(' ');
+}
 
-    // Print user and group information if not hidden in configuration
+// Function to print user and group information
+static void print_user_group_info(t_file_info *file_info, t_width *width, t_configuration *configuration) {
     if (!configuration->hide_owner_information) {
         mx_print_aligned(file_info->user, width->user, false);
         mx_printstr("  ");
@@ -210,7 +210,10 @@ void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_confi
         mx_print_aligned(file_info->group, width->group, false);
         mx_printstr("  ");
     }
+}
 
+// Function to print additional information based on file type and configuration settings
+static void print_additional_info(t_file_info *file_info, t_width *width, t_configuration *configuration) {
     // Print additional information based on file type and configuration settings
     if (configuration->hide_owner_information && configuration->hide_group_information)
         mx_printstr("  ");
@@ -239,29 +242,49 @@ void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_confi
         // Print raw size if human-readable size is not enabled
         mx_print_number_aligned(file_info->stat.st_size, width->size);
     }
-        
-    // Print date and time information
+}
+
+// Function to print date and time information
+static void print_date_time_info(t_file_info *file_info, t_configuration *configuration) {
     mx_printchar(' ');
     print_date_and_time(file_info->timespec.tv_sec, configuration->full_time_info);
     mx_printchar(' ');
+}
 
-    // Print file/directory name and additional information if it's a symbolic link
+// Function to print file/directory name and additional information if it's a symbolic link
+static void print_file_additional_info(t_file_info *file_info, t_configuration *configuration) {
     mx_print_file_info(file_info, configuration);
     if (file_info->link) {
         mx_printstr(" -> ");
         mx_printstr(file_info->link);
     }
     mx_printchar('\n');
+}
 
-    // Print extended attributes if enabled in configuration and present for the file
-    if (configuration->extended_attributes && file_info->xattr_keys)
-    {
+// Function to print extended attributes if enabled in configuration and present for the file
+static void print_extended_attributes(t_file_info *file_info, t_configuration *configuration) {
+    if (configuration->extended_attributes && file_info->xattr_keys) {
         print_xattrs(file_info, configuration->display_human_readable_size);
     }
+}
 
-    // Print ACL if enabled in configuration and present for the file
-    if (configuration->acl && file_info->acl)
-    {
+// Function to print ACL if enabled in configuration and present for the file
+static void print_acl_info(t_file_info *file_info, t_configuration *configuration) {
+    if (configuration->acl && file_info->acl) {
         print_acl(file_info->acl);
     }
 }
+
+// Function to print detailed file information including permissions, sizes, etc.
+void mx_print_file_info_detailed(t_file_info *file_info, t_width *width, t_configuration *configuration) {
+    print_file_info(file_info);
+    print_extended_acl_markers(file_info);
+    print_link_count(file_info, width);
+    print_user_group_info(file_info, width, configuration);
+    print_additional_info(file_info, width, configuration);
+    print_date_time_info(file_info, configuration);
+    print_file_additional_info(file_info, configuration);
+    print_extended_attributes(file_info, configuration);
+    print_acl_info(file_info, configuration);
+}
+
